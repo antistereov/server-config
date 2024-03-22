@@ -1,6 +1,8 @@
 version: '2'
 
+
 services:
+
   db:
     container_name: nextcloud-db
     image: mariadb:10.6
@@ -23,12 +25,12 @@ services:
       - nextcloud
     restart: unless-stopped
 
-  app:
+  nextcloud:
     container_name: nextcloud-app
     image: nextcloud
     restart: unless-stopped
     ports:
-      - "10080:80"
+      - "18080:80"
     volumes:
       - /data/nextcloud/nextcloud_data:/var/www/html
     networks:
@@ -40,9 +42,27 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
       - REDIS_HOST=redis
+      - OVERWRITEPROTOCOL
+      - OVERWRITEHOST
+      - TRUSTED_PROXIES
+      - APACHE_DISABLE_REWRITE_IP
     depends_on:
       - db
       - redis
+
+  cron:
+    image: nextcloud:stable-fpm
+    container_name: nextcloud-cron
+    networks:
+      - nextcloud
+    volumes:
+      - /data/nextcloud/nextcloud_data:/var/www/html
+    entrypoint: /cron.sh
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
 networks:
   nextcloud:
     external: true
