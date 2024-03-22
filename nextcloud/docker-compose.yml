@@ -1,33 +1,48 @@
 version: '2'
 
-volumes:
-  nextcloud:
-  db:
-
 services:
   db:
+    container_name: nextcloud-db
     image: mariadb:10.6
-    restart: always
+    restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
-      - db:/var/lib/mysql
+      - /data/nextcloud/db_data:/var/lib/mysql
+    networks:
+      - nextcloud
     environment:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_PASSWORD
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
+  redis:
+    image: redis:alpine
+    container_name: nextcloud-redis-cache
+    networks:
+      - nextcloud
+    restart: unless-stopped
+
   app:
+    container_name: nextcloud-app
     image: nextcloud
-    restart: always
+    restart: unless-stopped
     ports:
-      - 18080:80
-    links:
-      - db
+      - "10080:80"
     volumes:
-      - nextcloud:/var/www/html
+      - /data/nextcloud/nextcloud_data:/var/www/html
+    networks:
+      - nextcloud
     environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS
       - MYSQL_PASSWORD
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
+      - REDIS_HOST=redis
+    depends_on:
+      - db
+      - redis
+networks:
+  nextcloud:
+    external: true
