@@ -8,3 +8,9 @@ docker ps -a --format "table {{.Names}}\t{{.Status}}"
 # Disk usage
 df -h | awk '$NF=="/data"{printf "%.2f%\n", $5}'
 df -h | awk '$NF=="/data"{printf "%.2f%\n", $5}'
+
+# Tasks
+
+# Memory usage
+
+# Network bandwidth
