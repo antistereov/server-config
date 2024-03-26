@@ -20,6 +20,8 @@
 
 ### Initializing Server
 
+#### Install OS
+
 To install an operating system follow this doc: [Installimage](https://docs.hetzner.com/robot/dedicated-server/operating-systems/installimage/)
 
 In short, in order to be able to access the server, you have to activate the rescue system first. 
@@ -32,6 +34,40 @@ ssh root@<server-ip>
 ```
 
 Then you can run `installimage` to start the installation script.
+
+#### Setup
+
+1. Change root password:
+    ```shell
+    passwd
+    ```
+2. Create new user:
+    ```shell
+    adduser <username>
+    ```
+3. Granting sudo privileges 
+    ```shell
+    usermod -aG sudo <username>
+    ```
+4. Update the system:
+    ```shell
+    sudo apt update && sudo apt upgrade -y
+    ```
+5. Install applications:
+    ```shell
+    sudo apt install nala fish neofetch 
+    ```
+6. Install docker by following this tutorial: [Installation methods](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+7. Granting docker privileges
+    ```shell
+    groupadd docker
+    usermod -aG docker <username>
+    ```
+8. Reboot the system and log in as `<username>`.
+9. Change default shell to `fish`:
+    ```shell
+    chsh -s $(which fish)
+    ```
 
 ### Mounting Storage Box
 
@@ -48,6 +84,20 @@ Also create the file `/etc/backup-credentials.txt` with the following content:
 ```text
 username=<username>
 password=<password>
+```
+
+### Setting up Docker
+
+Generate an SSH-key to be able to access the [Server Config](https://github.com/antistereov/server-config)
+
+```shell
+ssh-keygen -t ed25519 -C "andre.antimonov@posteo.de"
+```
+
+Clone repository:
+
+```shell
+git clone   
 ```
 
 ## Monitoring
