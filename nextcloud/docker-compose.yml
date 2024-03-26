@@ -1,15 +1,12 @@
-version: '2'
-
-
 services:
 
-  db:
+  nextcloud-db:
     container_name: nextcloud-db
     image: mariadb:latest
     restart: unless-stopped
-    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
       - /data/nextcloud/db_data:/var/lib/mysql
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     networks:
       - nextcloud
     environment:
@@ -18,19 +15,19 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
-  redis:
-    image: redis:alpine
+  nextcloud-redis-cache:
     container_name: nextcloud-redis-cache
+    image: redis:alpine
+    restart: unless-stopped
     networks:
       - nextcloud
-    restart: unless-stopped
 
   nextcloud:
     container_name: nextcloud-app
     image: nextcloud
     restart: unless-stopped
     ports:
-      - "18080:80"
+      - "8000:80"
     volumes:
       - /data/nextcloud/nextcloud_data:/var/www/html
     networks:
@@ -42,23 +39,19 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
       - REDIS_HOST=redis
-      - OVERWRITEPROTOCOL
-      - OVERWRITEHOST
-      - TRUSTED_PROXIES
-      - APACHE_DISABLE_REWRITE_IP
     depends_on:
       - db
       - redis
 
-  cron:
-    image: nextcloud:stable-fpm
+  nextcloud-cron:
     container_name: nextcloud-cron
-    networks:
-      - nextcloud
+    image: nextcloud:stable-fpm
+    restart: unless-stopped
     volumes:
       - /data/nextcloud/nextcloud_data:/var/www/html
     entrypoint: /cron.sh
-    restart: unless-stopped
+    networks:
+      - nextcloud
     depends_on:
       - db
       - redis
