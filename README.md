@@ -3,6 +3,7 @@
 <!-- TOC -->
 * [Server Config](#server-config)
   * [Prerequisites](#prerequisites)
+    * [Initializing Server](#initializing-server)
     * [Mounting Storage Box](#mounting-storage-box)
   * [Monitoring](#monitoring)
   * [Portainer](#portainer)
