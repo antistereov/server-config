@@ -17,6 +17,21 @@
 
 ## Prerequisites
 
+### Initializing Server
+
+To install an operating system follow this doc: [Installimage](https://docs.hetzner.com/robot/dedicated-server/operating-systems/installimage/)
+
+In short, in order to be able to access the server, you have to activate the rescue system first. 
+Hetzner will show a password that can be used to access the server as user `root`.
+
+> To be able to access the Rescue System you have to reboot the server.
+
+```shell
+ssh root@<server-ip>
+```
+
+Then you can run `installimage` to start the installation script.
+
 ### Mounting Storage Box
 
 Follow this tutorial: [Access Storage Box via Samba/CIFS](https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs)
