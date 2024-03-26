@@ -1,6 +1,6 @@
 services:
 
-  nextcloud-db:
+  db:
     container_name: nextcloud-db
     image: mariadb:latest
     restart: unless-stopped
@@ -15,7 +15,7 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
-  nextcloud-redis-cache:
+  redis:
     container_name: nextcloud-redis-cache
     image: redis:alpine
     restart: unless-stopped
@@ -43,7 +43,7 @@ services:
       - db
       - redis
 
-  nextcloud-cron:
+  cron:
     container_name: nextcloud-cron
     image: nextcloud:stable-fpm
     restart: unless-stopped
