@@ -4,10 +4,14 @@
 * [Server Config](#server-config)
   * [Prerequisites](#prerequisites)
     * [Initializing Server](#initializing-server)
+      * [Install OS](#install-os)
+      * [Setup](#setup)
     * [Mounting Storage Box](#mounting-storage-box)
+    * [Setting up Docker](#setting-up-docker)
   * [Monitoring](#monitoring)
   * [Portainer](#portainer)
   * [Nginx Proxy Manager](#nginx-proxy-manager)
+  * [Mailcow](#mailcow)
   * [Nextcloud](#nextcloud)
     * [Prerequisites](#prerequisites-1)
     * [Installation](#installation)
@@ -117,6 +121,12 @@ Nginx Proxy Manager exposes the following ports:
 * `80`: http
 * `443`: https
 * `81`: Nginx Proxy Manager Console
+
+## Mailcow
+
+Follow this tutorial for setting up Mailcow: https://www.youtube.com/watch?v=4rzc0hWRSPg
+
+Follow this tutorial for setting up DNS records: https://www.youtube.com/watch?v=o66UFsodUYo
 
 ## Nextcloud
 
