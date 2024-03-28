@@ -196,3 +196,10 @@ Add the following A-record:
       return 301 /index.php$request_uri;
   }
   ```
+Add these lines to `nextcloud-data/config/config.php`:
+```php
+  'logtimezone' => 'Europe/Berlin',
+  'default_locale' => 'en_DE',
+  'default_phone_region' => 'DE',
+  'maintenance_window_start' => 1,
+```

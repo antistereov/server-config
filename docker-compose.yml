@@ -1,0 +1,145 @@
+networks:
+  proxy:
+    external: true
+
+services:
+
+  ####################################################################
+  #                             Proxy                                #
+  ####################################################################
+
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /data/nginx-proxy-manager/data:/data
+      - /data/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+  ####################################################################
+  #                            Monitoring                            #
+  ####################################################################
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    networks:
+      - proxy
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /data/monitoring/prometheus-data:/prometheus
+    networks:
+      - proxy
+    command:
+      - '--web.enable-lifecycle'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - /data/monitoring/grafana-data:/var/lib/grafana
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks:
+      - proxy
+    privileged: true
+    restart: unless-stopped
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - /data/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  ####################################################################
+  #                           Nextcloud                              #
+  ####################################################################
+
+  nextcloud-db:
+    container_name: nextcloud-db
+    image: mariadb:latest
+    restart: unless-stopped
+    volumes:
+      - /data/nextcloud/db-data:/var/lib/mysql
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    networks:
+      - proxy
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  nextcloud-redis:
+    container_name: nextcloud-redis-cache
+    image: redis:alpine
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  nextcloud-app:
+    container_name: nextcloud-app
+    image: nextcloud
+    restart: unless-stopped
+    volumes:
+      - /data/nextcloud/nextcloud-data:/var/www/html
+    networks:
+      - proxy
+    environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=nextcloud-db
+      - REDIS_HOST=nextcloud-redis
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITEHOST
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
+
+  nextcloud-cron:
+    container_name: nextcloud-cron
+    image: nextcloud:stable-fpm
+    restart: unless-stopped
+    volumes:
+      - /data/nextcloud/nextcloud-data:/var/www/html
+    entrypoint: /cron.sh
+    networks:
+      - proxy
+    depends_on:
+      - nextcloud-db
+      - nextcloud-redis
