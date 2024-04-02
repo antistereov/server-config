@@ -223,7 +223,7 @@ First, open the crontab file for editing with the command `crontab -e`
 Then, add the following line to the file:
 
 ```bash
-0 4 * * * /home/stereov/server-config/backup/backup.sh
+0 4 * * * /home/stereov/server-config/backup/backup.sh >> /var/log/backup.log 2>&1
 ```
 
 This line tells cron to run your script at 4 AM (0 minutes past the 4th hour) every day.
