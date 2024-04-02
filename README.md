@@ -18,6 +18,7 @@
     * [Configuration](#configuration)
       * [DNS](#dns)
       * [Nginx Proxy Manger](#nginx-proxy-manger)
+  * [Backup](#backup)
 <!-- TOC -->
 
 ## Prerequisites
