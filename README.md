@@ -213,3 +213,19 @@ Add these lines to `nextcloud-data/config/config.php`:
   'default_phone_region' => 'DE',
   'maintenance_window_start' => 1,
 ```
+
+## Backup
+
+The backup script is located in `backup`.
+
+To schedule a cron job to run your script every day at 4 AM, you can use the `crontab` command.
+First, open the crontab file for editing with the command `crontab -e`
+Then, add the following line to the file:
+
+```bash
+0 4 * * * /home/stereov/server-config/backup/backup.sh
+```
+
+This line tells cron to run your script at 4 AM (0 minutes past the 4th hour) every day.
+Make sure your script has execute permissions. You can add them with the command `chmod +x /home/stereov/server-config/backup/backup.sh`.
+Save and close the file. The cron job is now scheduled and will run your script every day at 4 AM.
