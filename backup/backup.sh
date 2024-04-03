@@ -17,19 +17,38 @@ get_last_three_months() {
     done
 }
 
-# Define backup directory
-backup_dir="/backup/volumes/$(date +'%Y-%m-%d')"
+# Define backup directories
+backup_volume_dir="/backup/volumes/$(date +'%Y-%m-%d')"
+backup_container_dir="/backup/containers/$(date +'%Y-%m-%d')"
 
-# Create backup directory if it doesn't exist
-mkdir -p "$backup_dir"
+# Create backup directories if they don't exist
+mkdir -p "$backup_volume_dir"
+mkdir -p "$backup_container_dir"
 
-# Get list of Docker volumes
+# Backup running containers
+echo "$(date +"%m/%d/%Y %H:%M:%S"): Backing up running containers..."
+running_containers=$(docker ps --quiet)
+for container_id in $running_containers; do
+    container_name=$(docker inspect --format '{{.Name}}' "$container_id" | cut -c2-)
+    container_backup_dir="$backup_container_dir/$container_name"
+
+    # Create backup directory for the container
+    mkdir -p "$container_backup_dir"
+
+    # Export the container filesystem to a tarball
+    docker export "$container_id" > "$container_backup_dir/container.tar"
+
+    echo "$(date +"%m/%d/%Y %H:%M:%S"): Backup of container '$container_name' completed."
+done
+echo "$(date +"%m/%d/%Y %H:%M:%S"): All running containers backed up to '$backup_container_dir'."
+
+
+# Backup volumes
+echo "$(date +"%m/%d/%Y %H:%M:%S"): Backing up volumes..."
 volumes=$(docker volume ls --quiet)
-
-# Loop through each volume and back it up
 for volume in $volumes; do
     volume_name=$(docker volume inspect --format '{{.Name}}' "$volume")
-    volume_backup_dir="$backup_dir/$volume_name"
+    volume_backup_dir="$backup_volume_dir/$volume_name"
 
     # Create backup directory for the volume
     mkdir -p "$volume_backup_dir"
@@ -40,7 +59,7 @@ for volume in $volumes; do
     echo "$(date +"%m/%d/%Y %H:%M:%S"): Backup of volume '$volume_name' completed."
 done
 
-echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_dir'."
+echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_volume_dir'."
 
 # Cleanup function
 cleanup() {
