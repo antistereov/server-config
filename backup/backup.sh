@@ -18,10 +18,12 @@ get_last_three_months() {
 }
 
 # Define backup directories
-backup_volume_dir="/backup/volumes/$(date +'%Y-%m-%d')"
-backup_container_dir="/backup/containers/$(date +'%Y-%m-%d')"
+backup_dir="/backup/$(date +'%Y-%m-%d')"
+backup_volume_dir="$backup_dir/volumes"
+backup_container_dir="$backup_dir/containers"
 
 # Create backup directories if they don't exist
+mkdir -p "$backup_dir"
 mkdir -p "$backup_volume_dir"
 mkdir -p "$backup_container_dir"
 
@@ -30,13 +32,11 @@ echo "$(date +"%m/%d/%Y %H:%M:%S"): Backing up running containers..."
 running_containers=$(docker ps --quiet)
 for container_id in $running_containers; do
     container_name=$(docker inspect --format '{{.Name}}' "$container_id" | cut -c2-)
-    container_backup_dir="$backup_container_dir/$container_name"
+    container_backup_archive="$backup_container_dir/$container_name.tar"
 
-    # Create backup directory for the container
-    mkdir -p "$container_backup_dir"
 
     # Export the container filesystem to a tarball
-    docker export "$container_id" > "$container_backup_dir/container.tar"
+    docker export "$container_id" > "$container_backup_archive"
 
     echo "$(date +"%m/%d/%Y %H:%M:%S"): Backup of container '$container_name' completed."
 done
@@ -48,13 +48,9 @@ echo "$(date +"%m/%d/%Y %H:%M:%S"): Backing up volumes..."
 volumes=$(docker volume ls --quiet)
 for volume in $volumes; do
     volume_name=$(docker volume inspect --format '{{.Name}}' "$volume")
-    volume_backup_dir="$backup_volume_dir/$volume_name"
-
-    # Create backup directory for the volume
-    mkdir -p "$volume_backup_dir"
 
     # Backup the volume by copying its contents to the backup directory
-    docker run --rm -v "$volume":/"$volume_name" -v "$volume_backup_dir":/backup alpine tar -cC / "$volume_name" > /dev/null
+    docker run --rm -v "$volume":/volume -v "$backup_volume_dir":/backup ubuntu tar cvf "backup/$volume.tar" volume > /dev/null
 
     echo "$(date +"%m/%d/%Y %H:%M:%S"): Backup of volume '$volume_name' completed."
 done
@@ -64,7 +60,7 @@ echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_volume_dir
 # Cleanup function
 cleanup() {
     # Get the dates to keep for volumes
-    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/volumes/* | head -n 3)
+    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/* | head -n 3)
 
     # Loop through all backup directories for volumes
     for dir in /backup/volumes/*; do
@@ -77,25 +73,10 @@ cleanup() {
             echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old volume backup '$dir'."
         fi
     done
-
-    # Get the dates to keep for containers
-    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/containers/* | head -n 3)
-
-    # Loop through all backup directories for containers
-    for dir in /backup/containers/*; do
-        # Get the date from the directory name
-        dir_date=$(basename "$dir")
-
-        # If the date is not in the list of dates to keep, delete the directory
-        if ! grep -q "$dir_date" <<< "$keep_dates"; then
-            rm -rf "$dir"
-            echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old container backup '$dir'."
-        fi
-    done
 }
 
 # Run the cleanup function
 cleanup
 
-rclone sync /backup b2:STEREOV-SERVER-BACKUP/backup
-echo "$(date +"%m/%d/%Y %H:%M:%S"): Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
+rclone sync /backup b2:STEREOV-SERVER-BACKUP
+# echo "$(date +"%m/%d/%Y %H:%M:%S"): Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
