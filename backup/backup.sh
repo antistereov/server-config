@@ -63,10 +63,10 @@ echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_volume_dir
 
 # Cleanup function
 cleanup() {
-    # Get the dates to keep
+    # Get the dates to keep for volumes
     keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/volumes/* | head -n 3)
 
-    # Loop through all backup directories
+    # Loop through all backup directories for volumes
     for dir in /backup/volumes/*; do
         # Get the date from the directory name
         dir_date=$(basename "$dir")
@@ -74,7 +74,22 @@ cleanup() {
         # If the date is not in the list of dates to keep, delete the directory
         if ! grep -q "$dir_date" <<< "$keep_dates"; then
             rm -rf "$dir"
-            echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old backup '$dir'."
+            echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old volume backup '$dir'."
+        fi
+    done
+
+    # Get the dates to keep for containers
+    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/containers/* | head -n 3)
+
+    # Loop through all backup directories for containers
+    for dir in /backup/containers/*; do
+        # Get the date from the directory name
+        dir_date=$(basename "$dir")
+
+        # If the date is not in the list of dates to keep, delete the directory
+        if ! grep -q "$dir_date" <<< "$keep_dates"; then
+            rm -rf "$dir"
+            echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old container backup '$dir'."
         fi
     done
 }
