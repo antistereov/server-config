@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo ""
+echo "$(date +"%m/%d/%Y %H:%M:%S"): Starting backup script."
+
 # Function to get the date of the last three Sundays
 get_last_three_sundays() {
     for i in {1..3}; do
@@ -34,16 +37,15 @@ for volume in $volumes; do
     # Backup the volume by copying its contents to the backup directory
     docker run --rm -v "$volume":/"$volume_name" -v "$volume_backup_dir":/backup alpine tar -cC / "$volume_name" > /dev/null
 
-    echo "Backup of volume '$volume_name' completed."
+    echo "$(date +"%m/%d/%Y %H:%M:%S"): Backup of volume '$volume_name' completed."
 done
 
-echo "All volumes backed up to '$backup_dir'."
+echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_dir'."
 
 # Cleanup function
 cleanup() {
     # Get the dates to keep
     keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/volumes/* | head -n 3)
-    echo "$keep_dates"
 
     # Loop through all backup directories
     for dir in /backup/volumes/*; do
@@ -53,7 +55,7 @@ cleanup() {
         # If the date is not in the list of dates to keep, delete the directory
         if ! grep -q "$dir_date" <<< "$keep_dates"; then
             rm -rf "$dir"
-            echo "Deleted old backup '$dir'."
+            echo "$(date +"%m/%d/%Y %H:%M:%S"): Deleted old backup '$dir'."
         fi
     done
 }
@@ -62,4 +64,4 @@ cleanup() {
 cleanup
 
 rclone sync /backup b2:STEREOV-SERVER-BACKUP/backup
-echo "Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
+echo "$(date +"%m/%d/%Y %H:%M:%S"): Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
