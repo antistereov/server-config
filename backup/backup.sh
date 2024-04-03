@@ -23,7 +23,7 @@ mkdir -p "$backup_dir"
 # Get list of Docker volumes
 volumes=$(docker volume ls --quiet)
 
- Loop through each volume and back it up
+# Loop through each volume and back it up
 for volume in $volumes; do
     volume_name=$(docker volume inspect --format '{{.Name}}' "$volume")
     volume_backup_dir="$backup_dir/$volume_name"
