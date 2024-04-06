@@ -7,6 +7,7 @@
       * [Install OS](#install-os)
       * [Setup](#setup)
     * [Change SSH port](#change-ssh-port)
+    * [Firewall setting](#firewall-setting)
     * [Mounting Storage Box](#mounting-storage-box)
     * [Setting up Docker](#setting-up-docker)
   * [Monitoring](#monitoring)
@@ -87,7 +88,7 @@ Search for the line starting with Port 22. In most cases, this line starts with 
 Remove the hash # and enter the new SSH port number:
 
 ```text
-Port 5522
+Port 5537
 ```
 
 Be extra careful when modifying the SSH configuration file. The incorrect configuration may cause the SSH service to fail to start.
@@ -97,6 +98,29 @@ Once done, save the file and restart the SSH service to apply the changes:
 ```shell
 sudo systemctl restart ssh
 ```
+
+### Firewall setting
+
+Set up default policies:
+
+```shell
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+Allow SSH (make sure to use the port specified [here](#change-ssh-port):
+
+```shell
+sudo ufw allow 5537/tcp comment 'SSH Port Rate Limit'
+```
+
+Allow http and https:
+
+```shell
+sudo ufw allow http https
+```
+
+> Docker doesn't obey these firewall settings and sets up its own settings in order to allow Docker to function as intended.
 
 ### Mounting Storage Box
 
@@ -145,7 +169,6 @@ Nginx Proxy Manager exposes the following ports:
 
 * `80`: http
 * `443`: https
-* `81`: Nginx Proxy Manager Console
 
 ## Mailcow
 
@@ -154,10 +177,6 @@ Follow this tutorial for setting up Mailcow: https://www.youtube.com/watch?v=4rz
 Follow this tutorial for setting up DNS records: https://www.youtube.com/watch?v=o66UFsodUYo
 
 ## Nextcloud
-
-Nextcloud exposes the following ports:
-
-* `8000`: Nextcloud website
 
 ### Prerequisites
 
@@ -176,6 +195,7 @@ Add the following variables in the `.env` file
 MYSQL_ROOT_PASSWORD=<ROOT_PASSWORD>
 MYSQL_PASSWORD=<PASSWORD>
 NEXTCLOUD_TRUSTED_DOMAINS=<DOMAIN>
+OVERWRITEHOST=<DOMAIN>
 ```
 
 ### Installation
