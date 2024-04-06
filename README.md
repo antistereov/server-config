@@ -6,6 +6,7 @@
     * [Initializing Server](#initializing-server)
       * [Install OS](#install-os)
       * [Setup](#setup)
+    * [Change SSH port](#change-ssh-port)
     * [Mounting Storage Box](#mounting-storage-box)
     * [Setting up Docker](#setting-up-docker)
   * [Monitoring](#monitoring)
