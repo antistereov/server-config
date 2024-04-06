@@ -73,6 +73,29 @@ Then you can run `installimage` to start the installation script.
     ```shell
     chsh -s $(which fish)
     ```
+   
+### Change SSH port
+
+Open the SSH configuration file /etc/ssh/sshd_config with your text editor:
+
+```shell
+sudo nano /etc/ssh/sshd_config
+```
+
+Search for the line starting with Port 22. In most cases, this line starts with a hash (#) character. 
+Remove the hash # and enter the new SSH port number:
+
+```text
+Port 5522
+```
+
+Be extra careful when modifying the SSH configuration file. The incorrect configuration may cause the SSH service to fail to start.
+
+Once done, save the file and restart the SSH service to apply the changes:
+
+```shell
+sudo systemctl restart ssh
+```
 
 ### Mounting Storage Box
 
