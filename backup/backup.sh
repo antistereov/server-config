@@ -18,7 +18,8 @@ get_last_three_months() {
 }
 
 # Define backup directories
-backup_dir="/backup/$(date +'%Y-%m-%d')"
+backup_parent_dir="/backup/STEREOV-SERVER/backup/docker"
+backup_dir="$backup_parent_dir/$(date +'%Y-%m-%d')"
 backup_volume_dir="$backup_dir/volumes"
 backup_container_dir="$backup_dir/containers"
 
@@ -60,10 +61,10 @@ echo "$(date +"%m/%d/%Y %H:%M:%S"): All volumes backed up to '$backup_volume_dir
 # Cleanup function
 cleanup() {
     # Get the dates to keep for volumes
-    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt /backup/* | head -n 3)
+    keep_dates=$(get_last_three_sundays; get_last_three_months; ls -dt $backup_parent_dir/* | head -n 3)
 
     # Loop through all backup directories for volumes
-    for dir in /backup/volumes/*; do
+    for dir in "$backup_parent_dir"/*; do
         # Get the date from the directory name
         dir_date=$(basename "$dir")
 
@@ -78,5 +79,5 @@ cleanup() {
 # Run the cleanup function
 cleanup
 
-rclone sync /backup b2:STEREOV-SERVER-BACKUP
+# rclone sync /backup b2:STEREOV-SERVER-BACKUP
 # echo "$(date +"%m/%d/%Y %H:%M:%S"): Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
