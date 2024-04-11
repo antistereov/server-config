@@ -77,7 +77,7 @@ cleanup() {
 }
 
 # Run the cleanup function
-cleanup
+#cleanup
 
 # rclone sync /backup b2:STEREOV-SERVER-BACKUP
 # echo "$(date +"%m/%d/%Y %H:%M:%S"): Sync /backup to b2:STEREOV-SERVER-BACKUP/backup completed."
