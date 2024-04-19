@@ -201,6 +201,11 @@ allowing users to easily configure and deploy routing rules for their web applic
 It provides a graphical interface for managing Nginx configurations, 
 making it accessible for users without extensive server administration experience.
 
+Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
+The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy).
+
+> Make sure to add SSL certificates for your domain.
+
 Nginx Proxy Manager exposes the following ports:
 
 * `80`: http
@@ -227,11 +232,6 @@ The `monitoring`-stack contains the following services:
 Add an A-record for Grafana, Nginx Proxy Manager and Portainer.
 
 #### Nginx Proxy Manager
-
-Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
-The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy).
-
-> Make sure to add SSL certificates for your domain.
 
 Add a Proxy Host for:
 
