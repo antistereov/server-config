@@ -5,10 +5,10 @@
   * [Remark](#remark)
   * [Prerequisites](#prerequisites)
     * [Initializing Server](#initializing-server)
-      * [Install Ubuntu](#install-ubuntu)
-      * [Setup](#setup)
-    * [Change SSH port](#change-ssh-port)
-    * [Firewall setting](#firewall-setting)
+      * [Installing Ubuntu](#installing-ubuntu)
+      * [Setting Up Ubuntu](#setting-up-ubuntu)
+    * [Changing SSH port](#changing-ssh-port)
+    * [Firewall Settings](#firewall-settings)
     * [Mounting Storage Box](#mounting-storage-box)
     * [Setting up Docker](#setting-up-docker)
     * [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy)
@@ -42,7 +42,7 @@ Two notes on Docker:
 
 ### Initializing Server
 
-#### Install Ubuntu
+#### Installing Ubuntu
 
 > My server is hosted by Hetzner. Therefore, the installation of Ubuntu on this machine is specific to Hetzner.
 
@@ -59,7 +59,7 @@ ssh root@<server-ip>
 
 Then you can run `installimage` to start the installation script.
 
-#### Setup
+#### Setting Up Ubuntu
 
 1. Change root password:
     ```shell
@@ -93,7 +93,7 @@ Then you can run `installimage` to start the installation script.
     chsh -s $(which fish)
     ```
    
-### Change SSH port
+### Changing SSH port
 
 This configuration is based on the following sources:
 
@@ -123,7 +123,7 @@ Once done, save the file and restart the SSH service to apply the changes:
 sudo systemctl restart ssh
 ```
 
-### Firewall setting
+### Firewall Settings
 
 This configuration is based on the following sources:
 
@@ -137,7 +137,7 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 ```
 
-Allow SSH (make sure to use the port specified [here](#change-ssh-port):
+Allow SSH (make sure to use the port specified [here](#changing-ssh-port):
 
 ```shell
 sudo ufw allow <SSH Port Number>/tcp comment 'SSH Port Rate Limit'
@@ -344,6 +344,9 @@ Add an A-record for your Nextcloud domain.
   
 #### Nextcloud Config
 
+> After starting the containers and initial setup of Nextcloud you may see warnings regarding the Maintenance Window and default phone regions.
+> Setting the following values should resolve these warnings.
+
 Add these lines to `nextcloud-data/config/config.php`:
 ```php
   'logtimezone' => 'Europe/Berlin',
@@ -351,6 +354,8 @@ Add these lines to `nextcloud-data/config/config.php`:
   'default_phone_region' => 'DE',
   'maintenance_window_start' => 1,
 ```
+
+Alternatively, you can set these values using occ: [occ config commands](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/occ_command.html#config-commands)
 
 ## Backup
 
