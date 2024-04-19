@@ -34,8 +34,9 @@
 This configuration is specific to my setup. You might need to skip some of these steps. 
 I tried to add every source that I used to configure my server. Feel free to check these out to.
 
-One note on Docker: I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management.
-I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
+Two notes on Docker: 
+* I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management. I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
+* I use an external docker network to connect all services. This way, only port `80` and `443` get exposed. Routing is done by Nginx Proxy Manager. Everything else stays in the Docker network.
 
 ## Prerequisites
 
@@ -181,6 +182,12 @@ Clone repository:
 
 ```shell
 git clone <repository-url>
+```
+
+Create the docker network:
+
+```shell
+docker network create proxy
 ```
 
 ### DNS, Cloudflare, Proxy
