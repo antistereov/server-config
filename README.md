@@ -2,32 +2,48 @@
 
 <!-- TOC -->
 * [Server Config](#server-config)
+  * [Remark](#remark)
   * [Prerequisites](#prerequisites)
     * [Initializing Server](#initializing-server)
-      * [Install OS](#install-os)
+      * [Install Ubuntu](#install-ubuntu)
       * [Setup](#setup)
     * [Change SSH port](#change-ssh-port)
     * [Firewall setting](#firewall-setting)
     * [Mounting Storage Box](#mounting-storage-box)
     * [Setting up Docker](#setting-up-docker)
-  * [Monitoring](#monitoring)
-  * [Portainer](#portainer)
+    * [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy)
   * [Nginx Proxy Manager](#nginx-proxy-manager)
-  * [Mailcow](#mailcow)
+  * [Monitoring](#monitoring)
+    * [Configuration](#configuration)
+      * [DNS](#dns)
+      * [Nginx Proxy Manager](#nginx-proxy-manager-1)
+      * [Grafana](#grafana)
   * [Nextcloud](#nextcloud)
     * [Prerequisites](#prerequisites-1)
     * [Installation](#installation)
-    * [Configuration](#configuration)
-      * [DNS](#dns)
+    * [Configuration](#configuration-1)
+      * [DNS](#dns-1)
       * [Nginx Proxy Manger](#nginx-proxy-manger)
+      * [Nextcloud Config](#nextcloud-config)
   * [Backup](#backup)
+  * [Mailcow](#mailcow)
 <!-- TOC -->
+
+## Remark
+
+This configuration is specific to my setup. You might need to skip some of these steps. 
+I tried to add every source that I used to configure my server. Feel free to check these out to.
+
+One note on Docker: I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management.
+I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
 
 ## Prerequisites
 
 ### Initializing Server
 
-#### Install OS
+#### Install Ubuntu
+
+> My server is hosted by Hetzner. Therefore, the installation of Ubuntu on this machine is specific to Hetzner.
 
 To install an operating system follow this doc: [Installimage](https://docs.hetzner.com/robot/dedicated-server/operating-systems/installimage/)
 
@@ -60,7 +76,7 @@ Then you can run `installimage` to start the installation script.
     ```shell
     sudo apt update && sudo apt upgrade -y
     ```
-5. Install applications:
+5. *(You can skip this step if you don't like these tools.)* Install applications:
     ```shell
     sudo apt install nala fish neofetch 
     ```
@@ -71,12 +87,19 @@ Then you can run `installimage` to start the installation script.
     usermod -aG docker <username>
     ```
 8. Reboot the system and log in as `<username>`.
-9. Change default shell to `fish`:
+9. *(You can skip this step if you don't like fish.)* Change default shell to `fish`:
     ```shell
     chsh -s $(which fish)
     ```
    
 ### Change SSH port
+
+This configuration is based on the following sources:
+
+* [How to Change the SSH Port in Linux](https://linuxize.com/post/how-to-change-ssh-port-in-linux/) on https://linuxize.com
+
+> It is recommended to change your SSH port. By default, SSH listens on port 22. 
+> Changing the default SSH port adds an extra layer of security to your server by reducing the risk of automated attacks.
 
 Open the SSH configuration file /etc/ssh/sshd_config with your text editor:
 
@@ -88,7 +111,7 @@ Search for the line starting with Port 22. In most cases, this line starts with 
 Remove the hash # and enter the new SSH port number:
 
 ```text
-Port 5537
+Port <Port Number>
 ```
 
 Be extra careful when modifying the SSH configuration file. The incorrect configuration may cause the SSH service to fail to start.
@@ -101,6 +124,11 @@ sudo systemctl restart ssh
 
 ### Firewall setting
 
+This configuration is based on the following sources:
+
+* [How to limit SSH (TCP port 22) connections with ufw on Ubuntu Linux](https://www.cyberciti.biz/faq/howto-limiting-ssh-connections-with-ufw-on-ubuntu-debian/) by Vivek Gite on https://www.cyberciti.biz
+* [How to Set Up a Firewall with UFW on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu) by Brian Boucheron and Jamon Camisso on https://www.digitalocean.com
+ 
 Set up default policies:
 
 ```shell
@@ -111,7 +139,7 @@ sudo ufw default allow outgoing
 Allow SSH (make sure to use the port specified [here](#change-ssh-port):
 
 ```shell
-sudo ufw allow 5537/tcp comment 'SSH Port Rate Limit'
+sudo ufw allow <SSH Port Number>/tcp comment 'SSH Port Rate Limit'
 ```
 
 Allow http and https:
@@ -124,12 +152,14 @@ sudo ufw allow http https
 
 ### Mounting Storage Box
 
+> I use a [Storage Box](https://docs.hetzner.com/robot/storage-box/) provided by Hetzner to store backups of my Docker volumes and containers.
+
 Follow this tutorial: [Access Storage Box via Samba/CIFS](https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs)
 
-Make sure to mount the storage box to `/data` on the server and enable encryption. Add this line to `/etc/fstab`:
+Make sure to mount the storage box to `/backup` on the server and enable encryption. Add this line to `/etc/fstab`:
 
 ```text
-//<username>.your-storagebox.de/backup /data cifs seal,iocharset=utf8,rw,credentials=/etc/backup-credentials.txt,uid=<system account>,gid=<system group>,file_mode=0660,dir_mode=0770 0 0
+//<username>.your-storagebox.de/backup /backup cifs seal,iocharset=utf8,rw,credentials=/etc/backup-credentials.txt,uid=<system account>,gid=<system group>,file_mode=0660,dir_mode=0770 0 0
 ```
 
 Also create the file `/etc/backup-credentials.txt` with the following content:
@@ -141,52 +171,108 @@ password=<password>
 
 ### Setting up Docker
 
-Generate an SSH-key to be able to access the [Server Config](https://github.com/antistereov/server-config)
+Generate an SSH-key to be able to access the Server Config repository.
 
 ```shell
-ssh-keygen -t ed25519 -C "andre.antimonov@posteo.de"
+ssh-keygen -t ed25519 -C <email>
 ```
 
 Clone repository:
 
 ```shell
-git clone   
+git clone <repository-url>
 ```
 
-## Monitoring
+### DNS, Cloudflare, Proxy
 
-<!-- TODO: Add monitoring -->
-
-## Portainer
-
-Portainer exposes the following ports:
-
-* `9443`: Portainer console using a self-signed SSL-certificate
+Follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo
 
 ## Nginx Proxy Manager
+
+[Nginx Proxy Manager](https://nginxproxymanager.com/) is a tool that simplifies the management of reverse proxies, 
+allowing users to easily configure and deploy routing rules for their web applications. 
+It provides a graphical interface for managing Nginx configurations, 
+making it accessible for users without extensive server administration experience.
 
 Nginx Proxy Manager exposes the following ports:
 
 * `80`: http
 * `443`: https
 
-## Mailcow
+## Monitoring
 
-Follow this tutorial for setting up Mailcow: https://www.youtube.com/watch?v=4rzc0hWRSPg
+This configuration is based on the following sources:
 
-Follow this tutorial for setting up DNS records: https://www.youtube.com/watch?v=o66UFsodUYo
+* [How to Set Up Grafana and Prometheus Using Docker ](https://dev.to/chafroudtarek/part-1-how-to-set-up-grafana-and-prometheus-using-docker-i47) by Chafroud Tarek on https://dev.to
+
+The `monitoring`-stack contains the following services:
+
+* [Portainer](https://www.portainer.io/): Container management tool
+* [Grafana](https://grafana.com/oss/grafana/): Data visualization
+* [Prometheus](https://prometheus.io/docs/introduction/overview/): Systems monitoring and alerting toolkit
+* [Cadvisor](https://github.com/google/cadvisor): Container monitoring
+* [Node Exporter](https://github.com/prometheus/node_exporter): Prometheus exporter for machine metrics
+
+### Configuration
+
+#### DNS
+
+Add an A-record for Grafana, Nginx Proxy Manager and Portainer.
+
+#### Nginx Proxy Manager
+
+Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
+The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy).
+
+> Make sure to add SSL certificates for your domain.
+
+Add a Proxy Host for:
+
+* Portainer: 
+  * Destination: `http://portainer:9000`
+  * Block common exploits: `true`
+  * SSL: make sure to use your SSL certificate
+  * SSL/Force SSL: `true`
+* Grafana:
+  * Destination: `http://grafana:3000`
+  * Block common exploits: `true`
+  * SSL: make sure to use your SSL certificate
+  * SSL/Force SSL: `true`
+* Nginx Proxy Manager:
+  * Destination: `http://nginx-proxy-manager:81`
+  * Block common exploits: `true`
+  * SSL: make sure to use your SSL certificate
+  * SSL/Force SSL: `true`
+
+#### Grafana
+
+Add the following data source:
+
+* Prometheus
+  * Name: `prometheus`
+  * Source: `http://prometheus:9090`
+
+Add the following dashboards and connect them to the prometheus data source:
+
+* [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
+* [Docker-cAdvisor](https://grafana.com/grafana/dashboards/13946-docker-cadvisor/)
 
 ## Nextcloud
 
+This configuration is based on the following sources: 
+
+* [How to Install Nextcloud with Docker: A Step-by-Step Guide](https://linuxiac.com/how-to-install-nextcloud-with-docker-compose/) - by Bobby Borisov on https://linuxiac.com
+* [Nginx Configuration](https://docs.nextcloud.com/server/28/admin_manual/installation/nginx.html) - Nextcloud Docs
+* [Reverse Proxy Configuration](https://docs.nextcloud.com/server/28/admin_manual/configuration_server/reverse_proxy_configuration.html) - Nextcloud Docs
+* [Background Jobs](https://docs.nextcloud.com/server/28/admin_manual/configuration_server/background_jobs_configuration.html) - Nextcloud Docs
+* [HowTo: Add a new trusted domain](https://help.nextcloud.com/t/howto-add-a-new-trusted-domain/26) - Nextcloud Help
+* [Your installation has no default phone region set](https://help.nextcloud.com/t/your-installation-has-no-default-phone-region-set/153632) - Nextcloud Help
+* [Can't get Reverse Proxy Header / https set up right on Nextcloud through Docker and Nginx Proxy Manager](https://stackoverflow.com/questions/70856799/cant-get-reverse-proxy-header-https-set-up-right-on-nextcloud-through-docker) - StackOverflow
+
 ### Prerequisites
 
-Create directory `/data/nextcloud`.
+Create file `.env` in `./nextcloud` directory:
 
-```shell
-sudo mkdir /data/nextcloud
-```
-
-Create file `.env` in same directory as `docker-compose.yml`
 ```shell
 touch ./.env
 ```
@@ -210,22 +296,19 @@ docker compose up -d
 
 #### DNS
 
-Add the following A-record:
-
+Add an A-record for your Nextcloud domain.
 
 #### Nginx Proxy Manger
 
-* Scheme: `http`
-* Forward Hostname: `IP of server`
-* Port: `8000 `
+* Destination: `http://nextcloud-app:80`
 * Cache Assets: `true `
 * Block common exploits: `true`
-* Web socket support: `true` 
-* SSL-certificate: `*.stereov.com`
-* Force SSL: `true`
-* HTTP/2-support: `true`
-* HSTS enabled: `true`
-* HSTS subdomains: `true`
+* Web socket support: `true`
+* SSL: make sure to use your SSL certificate
+* SSL/Force SSL: `true`
+* SSL/HTTP/2-support: `true`
+* SSL/HSTS enabled: `true`
+* SSL/HSTS subdomains: `true`
 * Custom Nginx Configuration:
   ```text
   client_body_buffer_size 512k;
@@ -251,6 +334,9 @@ Add the following A-record:
       return 301 /index.php$request_uri;
   }
   ```
+  
+#### Nextcloud Config
+
 Add these lines to `nextcloud-data/config/config.php`:
 ```php
   'logtimezone' => 'Europe/Berlin',
@@ -263,16 +349,27 @@ Add these lines to `nextcloud-data/config/config.php`:
 
 The backup script is located in `backup`.
 
+> This script is specific to my system. You need to change the variable `backup-parent-dir`.
+
 To schedule a cron job to run your script every day at 4 AM, you can use the `crontab` command.
 First, open the crontab file for editing with the command `crontab -e`
 Then, add the following line to the file:
 
 ```bash
-0 4 * * * bash -c "/home/stereov/server-config/backup/backup.sh" >> /var/log/backup.log 2>&1
+0 4 * * * bash -c <backup script location> >> /var/log/backup.log 2>&1
 ```
 
 > Make sure to set the ownership of the logfile to the user.
 
 This line tells cron to run your script at 4 AM (0 minutes past the 4th hour) every day.
-Make sure your script has execute permissions. You can add them with the command `chmod +x /home/stereov/server-config/backup/backup.sh`.
+Make sure your script has execute permissions. You can add them with the command `chmod +x <backup script location>`.
 Save and close the file. The cron job is now scheduled and will run your script every day at 4 AM.
+
+
+## Mailcow
+
+Follow this tutorial for setting up Mailcow: https://www.youtube.com/watch?v=4rzc0hWRSPg
+
+Follow this tutorial for setting up DNS records: https://www.youtube.com/watch?v=o66UFsodUYo
+
+> Development is still in progress...

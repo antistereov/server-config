@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change this location based on your setup
+backup_parent_dir="/backup/STEREOV-SERVER/backup/docker"
+
 echo ""
 echo "$(date +"%m/%d/%Y %H:%M:%S"): Starting backup script."
 
@@ -18,7 +21,6 @@ get_last_three_months() {
 }
 
 # Define backup directories
-backup_parent_dir="/backup/STEREOV-SERVER/backup/docker"
 backup_dir="$backup_parent_dir/$(date +'%Y-%m-%d')"
 backup_volume_dir="$backup_dir/volumes"
 backup_container_dir="$backup_dir/containers"
