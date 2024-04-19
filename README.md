@@ -115,7 +115,7 @@ Remove the hash # and enter the new SSH port number:
 Port <Port Number>
 ```
 
-Be extra careful when modifying the SSH configuration file. The incorrect configuration may cause the SSH service to fail to start.
+Be extra careful when modifying the SSH configuration file. An incorrect configuration may cause the SSH service to fail to start.
 
 Once done, save the file and restart the SSH service to apply the changes:
 
