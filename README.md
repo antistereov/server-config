@@ -32,7 +32,7 @@
 ## Remark
 
 This configuration is specific to my setup. You might need to skip some of these steps. 
-I tried to add every source that I used to configure my server. Feel free to check these out to.
+I tried to add every source that I used to configure my server. Feel free to check these out too.
 
 Two notes on Docker: 
 * I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management. I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
