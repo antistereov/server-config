@@ -194,6 +194,13 @@ docker network create proxy
 
 Follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo
 
+This tutorial shows how to:
+
+* configure DNS records
+* set up a proxy
+* generate your own SSL-certificates
+* make your website accessible from the world wide web
+
 ## Nginx Proxy Manager
 
 [Nginx Proxy Manager](https://nginxproxymanager.com/) is a tool that simplifies the management of reverse proxies, 
@@ -204,7 +211,7 @@ making it accessible for users without extensive server administration experienc
 Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
 The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy).
 
-> Make sure to add SSL certificates for your domain.
+> Make sure to add SSL certificates for your domain. The tutorial in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy) covers the process.
 
 Nginx Proxy Manager exposes the following ports:
 
@@ -238,17 +245,17 @@ Add a Proxy Host for:
 * Portainer: 
   * Destination: `http://portainer:9000`
   * Block common exploits: `true`
-  * SSL: make sure to use your SSL certificate
+  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
   * SSL/Force SSL: `true`
 * Grafana:
   * Destination: `http://grafana:3000`
   * Block common exploits: `true`
-  * SSL: make sure to use your SSL certificate
+  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
   * SSL/Force SSL: `true`
 * Nginx Proxy Manager:
   * Destination: `http://nginx-proxy-manager:81`
   * Block common exploits: `true`
-  * SSL: make sure to use your SSL certificate
+  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
   * SSL/Force SSL: `true`
 
 #### Grafana
@@ -311,7 +318,7 @@ Add an A-record for your Nextcloud domain.
 * Cache Assets: `true `
 * Block common exploits: `true`
 * Web socket support: `true`
-* SSL: make sure to use your SSL certificate
+* SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
 * SSL/Force SSL: `true`
 * SSL/HTTP/2-support: `true`
 * SSL/HSTS enabled: `true`
