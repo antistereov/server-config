@@ -178,6 +178,8 @@ Generate an SSH-key to be able to access the Server Config repository.
 ssh-keygen -t ed25519 -C <email>
 ```
 
+Add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account)
+
 Clone repository:
 
 ```shell
