@@ -5,15 +5,17 @@ networks:
 volumes:
   nginx-data:
   letsencrypt-data:
+    external: true
+    name: letsencrypt-data
 
 services:
-
   nginx-proxy-manager:
     container_name: nginx-proxy-manager
     image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
     ports:
       - '80:80'
+      - '81:81'
       - '443:443'
     volumes:
       - nginx-data:/data

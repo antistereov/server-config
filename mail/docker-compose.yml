@@ -1,0 +1,40 @@
+networks:
+  proxy:
+    external: true
+
+volumes:
+  letsencrypt-data:
+    external: true
+    name: letsencrypt-data
+
+services:
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    hostname: mail.stereov.com
+    networks:
+      - proxy
+    ports:
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "993:993"
+    volumes:
+      - /data/docker-data/dms/mail-data/:/var/mail/
+      - /data/docker-data/dms/mail-state/:/var/mail-state/
+      - /data/docker-data/dms/mail-logs/:/var/log/mail/
+      - /data/dms/config/:/tmp/docker-mailserver/
+      - /etc/localtime:/etc/localtime:ro
+      - letsencrypt-data:/etc/letsencrypt:ro
+    environment:
+      - ENABLE_RSPAMD=1
+      - ENABLE_CLAMAV=1
+      - ENABLE_FAIL2BAN=1
+      - SSL_TYPE=manual
+      - OVERRIDE_HOSTNAME=mail.stereov.com
+      # Change these paths based on the certificate path
+      - SSL_CERT_PATH=/etc/letsencrypt/live/npm-5/fullchain.pem
+      - SSL_KEY_PATH=/etc/letsencrypt/live/npm-5/privkey.pem
+    cap_add:
+      - NET_ADMIN # For Fail2Ban to work
+    restart: always
