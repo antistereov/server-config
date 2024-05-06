@@ -1,5 +1,2 @@
 nextcloud/.env
 .idea
-*/docker-data
-mail/.dms
-mail/.docker-data
