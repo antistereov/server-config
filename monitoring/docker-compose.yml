@@ -73,8 +73,3 @@ services:
     volumes:
       - portainer-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "https://portainer.stereov.com" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
