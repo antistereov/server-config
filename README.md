@@ -1,40 +1,5 @@
 # Server Config
 
-<!-- TOC -->
-* [Server Config](#server-config)
-  * [Remark](#remark)
-  * [Prerequisites](#prerequisites)
-    * [Initializing Server](#initializing-server)
-      * [Installing Ubuntu](#installing-ubuntu)
-      * [Setting Up Ubuntu](#setting-up-ubuntu)
-    * [Changing SSH port](#changing-ssh-port)
-    * [Firewall Settings](#firewall-settings)
-    * [Mounting Storage Box](#mounting-storage-box)
-    * [Setting up Docker](#setting-up-docker)
-    * [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy)
-  * [Nginx Proxy Manager](#nginx-proxy-manager)
-    * [Initial Setup](#initial-setup)
-    * [SSL Certificates](#ssl-certificates)
-  * [Monitoring](#monitoring)
-    * [Configuration](#configuration)
-      * [DNS](#dns)
-      * [Nginx Proxy Manager](#nginx-proxy-manager-1)
-      * [Grafana](#grafana)
-  * [Nextcloud](#nextcloud)
-    * [Prerequisites](#prerequisites-1)
-    * [Installation](#installation)
-    * [Configuration](#configuration-1)
-      * [DNS](#dns-1)
-      * [Nginx Proxy Manger](#nginx-proxy-manger)
-      * [Nextcloud Config](#nextcloud-config)
-  * [Mailserver](#mailserver)
-    * [SSL](#ssl)
-    * [Setup](#setup)
-    * [DNS](#dns-2)
-    * [Connect to clients](#connect-to-clients)
-  * [Backup](#backup)
-<!-- TOC -->
-
 ## Remark
 
 This configuration is specific to my setup. You might need to skip some of these steps. 
