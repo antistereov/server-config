@@ -400,6 +400,10 @@ This section is based on the following sources:
 * [Setting up DNS records - YouTube](https://www.youtube.com/watch?v=o66UFsodUYo)
 * [Official documentation for Docker Mailserver](https://docker-mailserver.github.io/docker-mailserver/latest/)
 
+I'm using [Docker Mailserver](https://github.com/docker-mailserver/docker-mailserver) as Mailserver and [Roundcube](https://roundcube.net/) as Webmail Client.
+
+> You need to change `hostname`, `domainname` in `docker-compose.yml` and `OVERRIDE_HOSTNAME` in `mailserver.env` to your domain.
+
 Follow the official documentation to set up mailserver: https://docker-mailserver.github.io/docker-mailserver/latest/
 
 ### SSL
@@ -436,15 +440,19 @@ Just display the contents of the file `rsa-2048-mail-<your-domain>.public.dns.tx
 
 ### DNS
 
-You need to add the following DNS records:
+Setting up your DNS records correctly can be tricky. If you need more advice, take a look at this guide: https://www.cloudflare.com/learning/dns/dns-records/
+
+In my case, adding these records worked:
 
 ```text
-MX  <your domain>       mail.stereov.com
-A   mail.<your domain>  <your ip-address>
-TXT -dmarc              v=DMARC1; p=reject; rua=mailto:<your e-mail>; ruf=mailto:<your e-mail>; sp=reject; fo=1; ri=86400
+MX  example.com         mail.example.com
+A   mail.example.com    <your ip-address>
+TXT -dmarc              v=DMARC1; p=reject; rua=mailto:<your e-mail address>; ruf=mailto:<your e-mail address>; sp=reject; fo=1; ri=86400
 TXT <your domain>       v=spf1 ip4:<your ip-address> -all
 TXT mail._domainkey     <DKIM key generated in the step above>
 ```
+
+Make sure to include your e-mail address to get DMARC reports.
 
 ## Backup
 
