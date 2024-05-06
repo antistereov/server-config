@@ -31,6 +31,7 @@
     * [SSL](#ssl)
     * [Setup](#setup)
     * [DNS](#dns-2)
+    * [Connect to clients](#connect-to-clients)
   * [Backup](#backup)
 <!-- TOC -->
 
@@ -447,12 +448,30 @@ In my case, adding these records worked:
 ```text
 MX  example.com         mail.example.com
 A   mail.example.com    <your ip-address>
-TXT -dmarc              v=DMARC1; p=reject; rua=mailto:<your e-mail address>; ruf=mailto:<your e-mail address>; sp=reject; fo=1; ri=86400
-TXT <your domain>       v=spf1 ip4:<your ip-address> -all
-TXT mail._domainkey     <DKIM key generated in the step above>
+TXT -dmarc              v=DMARC1; p=reject; sp=reject; fo=1; ri=86400
+TXT <your domain>       v=spf1 mx -all
+TXT dkim._domainkey     <DKIM key generated in the step above>
 ```
 
 Make sure to include your e-mail address to get DMARC reports.
+
+### Connect to clients
+
+You can connect access the mailbox via roundcube or configure your e-mail client of choice:
+
+* Incoming server: 
+  * Server type: IMAP Mail Server
+  * Server name: `mail.example.com` 
+  * Port: `143`
+  * Connection security: `STARTTLS`
+  * User name: `user@example.com`
+  * Authentication method: Normal password
+* Outgoing server:
+  * Server name: `mail.example.com`
+  * Port: `587`
+  * Connection security: `STARTTLS`
+  * Authentication method: Normal password
+  * User name: `user@example.com`
 
 ## Backup
 

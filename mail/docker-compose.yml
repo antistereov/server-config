@@ -47,10 +47,10 @@ services:
       - roundcube-data:/var/roundcube/db
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=sqlite
-      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mail.stereov.com
+      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://mail.stereov.com
       - ROUNDCUBEMAIL_DEFAULT_PORT=143
-      - ROUNDCUBEMAIL_SMTP_SERVER=ssl://mail.stereov.com
-      - ROUNDCUBEMAIL_SMTP_PORT=465
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://mail.stereov.com
+      - ROUNDCUBEMAIL_SMTP_PORT=587
     depends_on:
       - mailserver
     networks:
