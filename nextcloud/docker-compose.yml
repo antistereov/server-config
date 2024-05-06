@@ -50,6 +50,12 @@ services:
     depends_on:
       - nextcloud-db
       - nextcloud-redis
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "https://nextcloud.stereov.com" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
   nextcloud-cron:
     container_name: nextcloud-cron
