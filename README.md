@@ -1,5 +1,24 @@
 # Server Config
 
+This README serves as a guide for setting up your own server with useful tools. The starting point is a usable server with root access. An operating system does not need to be installed yet.
+This configuration is oppinionated. Please check out the [Remark](#remark).
+
+If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequsities).
+
+If Docker is already installed and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. 
+These containers include a Nextcloud instance, a Mailserver, monitoring solutions, a reverse proxy manager and some utilities.
+You can run each stack individually. Just check out the corresponding section:
+
+* [Nginx Proxy Manager](#nginx-proxy-manager)
+* [Monitoring](#monitoring)
+* [Nextcloud](#nextcloud)
+* [Mailserver](#mailserver)
+
+I also created a backup script that backs up all containers and Docker volumes.
+You can use a cron job to run this script periodically.
+
+* [Backup](#backup)
+
 ## Remark
 
 This configuration is specific to my setup. You might need to skip some of these steps. 
@@ -396,13 +415,18 @@ docker exec -it mailserver setup email add admin@<your domain>
 Generate DKIM-Key:
 
 ```shell
-docker exec -it mailserver setup config dkim
+docker exec -it mailserver setup config dkim keysize 1024
 ```
 
+I had some issues earlier when using the default keysize of 2048.
 You need the value later to set up DNS-records.
 
-You can find a file containing this value inside the container at the path `/tmp/docker-mailserver/rspamd/dkim`.
-Just display the contents of the file `rsa-2048-mail-<your-domain>.public.dns.txt`
+The vaulue is saved inside the container.
+Just display the contents of the file using:
+
+```shell
+docker exec —it mailserver bash —c "cat /tmp/docker—maitserver/opendkim/keys/<your domain>/mail.txt"
+```
 
 ### DNS
 
@@ -414,7 +438,7 @@ In my case, adding these records worked:
 MX  example.com         mail.example.com
 A   mail.example.com    <your ip-address>
 TXT -dmarc              v=DMARC1; p=reject; sp=reject; fo=1; ri=86400
-TXT <your domain>       v=spf1 mx -all
+TXT example.com         v=spf1 mx -all
 TXT dkim._domainkey     <DKIM key generated in the step above>
 ```
 
