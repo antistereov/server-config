@@ -1,40 +1,57 @@
-networks:
-  proxy:
-    external: true
-
 volumes:
+  mail-data:
+  mail-state:
+  mail-logs:
+  dms-config:
   letsencrypt-data:
     external: true
     name: letsencrypt-data
+  roundcube-data:
+
+networks:
+  proxy:
+    external: true
 
 services:
   mailserver:
     image: ghcr.io/docker-mailserver/docker-mailserver:latest
     container_name: mailserver
+    domainname: mail.stereov.com
     hostname: mail.stereov.com
-    networks:
-      - proxy
+    env_file: mailserver.env
     ports:
-      - "25:25"
-      - "465:465"
-      - "587:587"
-      - "993:993"
+      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
+      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
+      - "465:465"  # ESMTP (implicit TLS)
+      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
+      - "993:993"  # IMAP4 (implicit TLS)
     volumes:
-      - /data/docker-data/dms/mail-data/:/var/mail/
-      - /data/docker-data/dms/mail-state/:/var/mail-state/
-      - /data/docker-data/dms/mail-logs/:/var/log/mail/
-      - /data/dms/config/:/tmp/docker-mailserver/
+      - mail-data:/var/mail/
+      - mail-state:/var/mail-state/
+      - mail-logs:/var/log/mail/
+      - dms-config:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
       - letsencrypt-data:/etc/letsencrypt:ro
-    environment:
-      - ENABLE_RSPAMD=1
-      - ENABLE_CLAMAV=1
-      - ENABLE_FAIL2BAN=1
-      - SSL_TYPE=manual
-      - OVERRIDE_HOSTNAME=mail.stereov.com
-      # Change these paths based on the certificate path
-      - SSL_CERT_PATH=/etc/letsencrypt/live/npm-5/fullchain.pem
-      - SSL_KEY_PATH=/etc/letsencrypt/live/npm-5/privkey.pem
     cap_add:
       - NET_ADMIN # For Fail2Ban to work
-    restart: always
+    restart: unless-stopped
+    healthcheck:
+      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
+      timeout: 3s
+      retries: 0
+
+  roundcube:
+    image: roundcube/roundcubemail
+    container_name: roundcube
+    volumes:
+      - roundcube-data:/var/roundcube/db
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=sqlite
+      - ROUNDCUBEMAIL_DEFAULT_HOST=ssl://mail.stereov.com
+      - ROUNDCUBEMAIL_DEFAULT_PORT=143
+      - ROUNDCUBEMAIL_SMTP_SERVER=ssl://mail.stereov.com
+      - ROUNDCUBEMAIL_SMTP_PORT=465
+    depends_on:
+      - mailserver
+    networks:
+      - proxy
