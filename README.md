@@ -75,14 +75,13 @@ docker compose up -d
 
 #### Installing Ubuntu
 
-> My server is hosted by Hetzner. Therefore, the installation of Ubuntu on this machine is specific to Hetzner.
-
+My server is hosted by Hetzner. Therefore, the installation of Ubuntu on this machine is specific to Hetzner.
 To install an operating system follow this doc: [Installimage](https://docs.hetzner.com/robot/dedicated-server/operating-systems/installimage/)
 
 In short, in order to be able to access the server, you have to activate the rescue system first. 
 Hetzner will show a password that can be used to access the server as user `root`.
 
-> To be able to access the Rescue System you have to reboot the server.
+To be able to access the Rescue System you have to reboot the server.
 
 ```shell
 ssh root@<server-ip>
@@ -130,8 +129,8 @@ This configuration is based on the following sources:
 
 * [How to Change the SSH Port in Linux](https://linuxize.com/post/how-to-change-ssh-port-in-linux/) on https://linuxize.com
 
-> It is recommended to change your SSH port. By default, SSH listens on port 22. 
-> Changing the default SSH port adds an extra layer of security to your server by reducing the risk of automated attacks.
+It is recommended to change your SSH port. By default, SSH listens on port 22. 
+Changing the default SSH port adds an extra layer of security to your server by reducing the risk of automated attacks.
 
 Open the SSH configuration file /etc/ssh/sshd_config with your text editor:
 
@@ -180,13 +179,11 @@ Allow http and https:
 sudo ufw allow http https
 ```
 
-> Docker doesn't obey these firewall settings and sets up its own settings in order to allow Docker to function as intended.
+**Note:** Docker doesn't obey these firewall settings and sets up its own settings in order to allow Docker to function as intended.
 
 ### Mounting Storage Box
 
-> I use a [Storage Box](https://docs.hetzner.com/robot/storage-box/) provided by Hetzner to store backups of my Docker volumes and containers.
-
-Follow this tutorial: [Access Storage Box via Samba/CIFS](https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs)
+I use a [Storage Box](https://docs.hetzner.com/robot/storage-box/) provided by Hetzner to store backups of my Docker volumes and containers.
 
 Make sure to mount the storage box to `/backup` on the server and enable encryption. Add this line to `/etc/fstab`:
 
@@ -200,6 +197,8 @@ Also create the file `/etc/backup-credentials.txt` with the following content:
 username=<username>
 password=<password>
 ```
+
+For further information, take a look at Hetzner's documentation: [Access Storage Box via Samba/CIFS](https://docs.hetzner.com/robot/storage-box/access/access-samba-cifs)
 
 ### Setting up Docker
 
@@ -231,9 +230,7 @@ docker volume create --name letsencrypt-data
 
 ### DNS, Proxy, Cloudflare
 
-You can just follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo
-
-This tutorial shows how to:
+You can just follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo. This tutorial shows how to:
 
 * configure DNS records
 * set up a proxy
@@ -278,7 +275,7 @@ making it accessible for users without extensive server administration experienc
 Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
 The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-proxy-cloudflare).
 
-> Make sure to add SSL certificates for your domain. The tutorial in the subsection [DNS, Cloudflare, Proxy](#dns-proxy-cloudflare) covers the process.
+Make sure to add SSL certificates for your domain. The tutorial in the subsection [DNS, Cloudflare, Proxy](#dns-proxy-cloudflare) covers the process.
 
 Nginx Proxy Manager exposes the following ports:
 
@@ -461,8 +458,8 @@ Add an A-record for your Nextcloud domain.
   
 #### Nextcloud Config
 
-> After starting the containers and initial setup of Nextcloud you may see warnings regarding the Maintenance Window and default phone regions.
-> Setting the following values should resolve these warnings.
+After starting the containers and initial setup of Nextcloud you may see warnings regarding the Maintenance Window and default phone regions.
+Setting the following values should resolve these warnings.
 
 Add these lines to `nextcloud-data/config/config.php`:
 ```php
@@ -483,8 +480,6 @@ This section is based on the following sources:
 
 I'm using [Docker Mailserver](https://github.com/docker-mailserver/docker-mailserver) as Mailserver and [Roundcube](https://roundcube.net/) as Webmail Client.
 
-> You need to change `hostname`, `domainname` in `docker-compose.yml` and `OVERRIDE_HOSTNAME` in `mailserver.env` to your domain.
-
 I can highly recommend to follow the official documentation to set up your mailserver: https://docker-mailserver.github.io/docker-mailserver/latest/
 
 ### SSL
@@ -497,6 +492,8 @@ Therefore, the certificate location must be updated manually.
 You need to check with folder contains the right certificates and change the environment variables in the docker compose file accordingly.
 
 ### Setup
+
+#### Environment variables
 
 Enter the missing environment variables in `mail/.env`.
 Both `DOMAIN_NAME` and `OVERRIDE_HOSTNAME` should be your mailserver's domain, e.g. `mail.example.com`
@@ -514,6 +511,18 @@ docker exec nginx-proxy-mananer bash -c "ll /etc/letsencrypt/live"
 
 This should give you all possible directories. If you have multiple folders, visit your NPM interface, go to SSL Certificates and hover over the three dots next to the right certificate.
 This is the correct number.
+
+#### Firewall
+
+I had some issues with `ufw` when trying to connect to the mailserver using an external mail client. Therefore, I allowed these ports as well: 25, 143, 465, 587, 933.
+
+You can allow ports by running: 
+
+```shell
+sudo ufw allow <port>
+```
+
+#### Initial setup
 
 Now move to the `mail` directory and start the service for the first time:
 
@@ -550,6 +559,8 @@ Just display the contents of the file using:
 ```shell
 docker exec —it mailserver bash —c "cat rsa-1024-mail-<your domain>.public.txtt"
 ```
+
+#### Start the mailserver
 
 Now restart everything using:
 
@@ -614,9 +625,7 @@ You can connect access the mailbox via roundcube or configure your e-mail client
 
 ## Backup
 
-The backup script is located in `backup`.
-
-> This script is specific to my system. You need to change the variable `backup-parent-dir`.
+The backup script is located in `backup`. This script is specific to my system. You need to change the variable `backup-parent-dir`.
 
 To schedule a cron job to run your script every day at 4 AM, you can use the `crontab` command.
 First, open the crontab file for editing with the command `crontab -e`
