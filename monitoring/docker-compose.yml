@@ -8,7 +8,6 @@ volumes:
   portainer-data:
 
 services:
-
   node-exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node-exporter
@@ -41,12 +40,13 @@ services:
       - proxy
     volumes:
       - grafana-data:/var/lib/grafana
+    environment:
+      - GRAFANA_DOMAIN
     healthcheck:
-      test: [ "CMD", "curl", "-f", "https://grafana.stereov.com" ]
+      test: [ "CMD", "curl", "-f", "https://${GRAFANA_DOMAIN}" ]
       interval: 30s
       timeout: 10s
       retries: 3
-
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1

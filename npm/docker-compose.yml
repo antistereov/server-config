@@ -3,7 +3,7 @@ networks:
     external: true
 
 volumes:
-  nginx-data:
+  npm-data:
   letsencrypt-data:
     external: true
     name: letsencrypt-data
@@ -13,17 +13,19 @@ services:
     container_name: nginx-proxy-manager
     image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
+    environment:
+      - NPM_DOMAIN=${NPM_DOMAIN}
     ports:
       - '80:80'
       - '81:81'
       - '443:443'
     volumes:
-      - nginx-data:/data
+      - npm-data:/data
       - letsencrypt-data:/etc/letsencrypt
     networks:
       - proxy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "https://npm.stereov.com" ]
+      test: [ "CMD", "curl", "-f", "https://${NPM_DOMAIN}" ]
       interval: 30s
       timeout: 10s
       retries: 3

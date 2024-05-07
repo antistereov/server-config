@@ -16,9 +16,11 @@ services:
   mailserver:
     image: ghcr.io/docker-mailserver/docker-mailserver:latest
     container_name: mailserver
-    domainname: mail.stereov.com
-    hostname: mail.stereov.com
-    env_file: mailserver.env
+    domainname: ${DOMAIN_NAME}
+    hostname: ${DOMAIN_NAME}
+    env_file:
+      - mailserver.env
+      - .env
     ports:
       - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
       - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
@@ -47,16 +49,17 @@ services:
       - roundcube-data:/var/roundcube/db
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=sqlite
-      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://mail.stereov.com
+      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://${DOMAIN_NAME}
       - ROUNDCUBEMAIL_DEFAULT_PORT=143
-      - ROUNDCUBEMAIL_SMTP_SERVER=tls://mail.stereov.com
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://${DOMAIN_NAME}
       - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBE_DOMAIN=${ROUNDCUBE_DOMAIN}
     depends_on:
       - mailserver
     networks:
       - proxy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "https://roundcube.stereov.com" ]
+      test: [ "CMD", "curl", "-f", "https://${ROUNDCUBE_DOMAIN}" ]
       interval: 30s
       timeout: 10s
       retries: 3
