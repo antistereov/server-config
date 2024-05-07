@@ -238,9 +238,9 @@ It provides a graphical interface for managing Nginx configurations,
 making it accessible for users without extensive server administration experience.
 
 Follow the [official guide](https://nginxproxymanager.com/guide/#quick-setup) to set up Nginx Proxy Manager. 
-The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy).
+The setup is also covered in the subsection [DNS, Cloudflare, Proxy](#dns-proxy-cloudflare).
 
-> Make sure to add SSL certificates for your domain. The tutorial in the subsection [DNS, Cloudflare, Proxy](#dns-cloudflare-proxy) covers the process.
+> Make sure to add SSL certificates for your domain. The tutorial in the subsection [DNS, Cloudflare, Proxy](#dns-proxy-cloudflare) covers the process.
 
 Nginx Proxy Manager exposes the following ports:
 
@@ -308,22 +308,22 @@ Add a Proxy Host for:
 * Portainer: 
   * Destination: `http://portainer:9000`
   * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
+  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
 * Grafana:
   * Destination: `http://grafana:3000`
   * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
+  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
 * Nginx Proxy Manager:
   * Destination: `http://nginx-proxy-manager:81`
   * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
+  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
 * Roundcube:
   * Destination: `http://roundcube:80`
   * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
+  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
 
 #### Deployment
@@ -390,7 +390,7 @@ Add an A-record for your Nextcloud domain.
 * Cache Assets: `true `
 * Block common exploits: `true`
 * Web socket support: `true`
-* SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
+* SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
 * SSL/Force SSL: `true`
 * SSL/HTTP/2-support: `true`
 * SSL/HSTS enabled: `true`
