@@ -12,9 +12,7 @@ These tools are included:
 
 If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequisites).
 
-If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. Here's a guide on how to install the services: [Installation](#installation).
-
-My preconfigured services include a Nextcloud instance, a mailserver, monitoring solutions, a reverse proxy manager and some utilities.
+If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. Here's a guide on how to install the services: [Installation](#installation). 
 You can run each stack individually. Just check out the corresponding section:
 
 * [Nginx Proxy Manager](#nginx-proxy-manager)
