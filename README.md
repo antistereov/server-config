@@ -57,7 +57,19 @@ docker compose up -d
 
 ## Update
 
-To update 
+To update the containers of a stack just move to the respective directory and run:
+
+```shell
+docker compose pull
+```
+
+This pulls the latest images of your containers.
+To update the containers, you need to restart them:
+
+```shell
+docker compose down
+docker compose up -d
+```
 
 ## Prerequisites
 
