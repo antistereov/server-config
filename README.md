@@ -1,11 +1,11 @@
 # Server Config
 
 This README serves as a guide for setting up your own server with useful tools. The starting point is a usable server with root access. An operating system does not need to be installed yet.
-This configuration is oppinionated. Please check out the [Remark](#remark).
+This configuration is opinionated. Please check out the [Remark](#remark).
 
-If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequsities).
+If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequisites).
 
-If Docker is already installed and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. 
+If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. 
 These containers include a Nextcloud instance, a Mailserver, monitoring solutions, a reverse proxy manager and some utilities.
 You can run each stack individually. Just check out the corresponding section:
 
@@ -23,6 +23,9 @@ You can use a cron job to run this script periodically.
 
 This configuration is specific to my setup. You might need to skip some of these steps. 
 I tried to add every source that I used to configure my server. Feel free to check these out too.
+
+I'm using Cloudflare as my DNS and domain provider. For me, this makes the process of setting up proxies and DNS records as simple as possible.
+If you are using another DNS provider, some configuration steps might be different from mine.
 
 Two notes on Docker: 
 * I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management. I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
@@ -188,9 +191,9 @@ Create a volume for SSL certificates:
 docker volume create --name letsencrypt-data
 ```
 
-### DNS, Cloudflare, Proxy
+### DNS, Proxy, Cloudflare
 
-Follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo
+You can just follow this tutorial: https://www.youtube.com/watch?v=GarMdDTAZJo
 
 This tutorial shows how to:
 
@@ -199,9 +202,37 @@ This tutorial shows how to:
 * generate your own SSL-certificates
 * make your website accessible from the world wide web
 
+For the impatient, here is a short overview:
+
+* Set up a DNS record on your DNS provider's website. I'm using Cloudflare.
+  * Type: A
+  * Name: `npm.example.com` (This is the domain you want to access NPM from.)
+  * Destination: your server's public IP
+  * Proxied: `true`, since we want to use a reverse proxy later on
+* Set up Nginx Proxy Manager following this section: [Setup](#setup). If you are able to access NPM at `<your public ip>:81`, you are good to go.
+* Generate SSL certificates
+  * in Nginx Proxy Manager go to SSL Certificates
+  * click on *Add SSL certificate* and enter the following values:
+    * Domain name: `*.example.com`, where `example.com` is the domain you registered. The `*` serves as a placeholder so any domain containing `example.com` can use this certificate
+    * Use DNS challenge: `true` is recommended. If you use Cloudflare as DNS provider, just enter your Cloudflare API token. Click [here](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) to learn how to create one.
+    * agree to the terms of services and you are set to go
+* Set up Proxy Hosts
+  * In NPM go to *Hosts* and click on *Proxy Hosts*. Here you can set up how your containers can be accessed from the internet. We will now create a proxy host for NPM. Other hosts can be created in the same way.
+  * click on *New Proxy Host* and enter the following values:
+    * Domain names: `npm.example.com` (The domain you just set up a DNS record for.)
+    * Scheme: `http`
+    * Forward Hostname: `nginx-proxy-manager` (This is the name of the Docker container inside the network)
+    * Forward Port: `81` (This is the port that you can access the web interface from.)
+    * choose *Block common exploits*
+    * click on the SSL tab and choose the certificate we just generated (should be `*.example.com`)
+    * choose *Force SSL*
+  * Click save, and now you should be able to access NPM from `https://npm.example.com`. Congratulations!
+
+If you want to add more proxy hosts, just repeat this whole process. You can scip accessing NPM via `<your public ip>:81` and access it directly via `https://npm.example.com`
+
 ## Nginx Proxy Manager
 
-[Nginx Proxy Manager](https://nginxproxymanager.com/) is a tool that simplifies the management of reverse proxies, 
+[Nginx Proxy Manager](https://nginxproxymanager.com/), or NPM for short, is a tool that simplifies the management of reverse proxies, 
 allowing users to easily configure and deploy routing rules for their web applications. 
 It provides a graphical interface for managing Nginx configurations, 
 making it accessible for users without extensive server administration experience.
@@ -217,9 +248,25 @@ Nginx Proxy Manager exposes the following ports:
 * `81`: Nginx Proxy Manager
 * `443`: https
 
-### Initial Setup
+### Setup
 
-You can access Nginx Proxy Manager at `<your-ip-address>:81`.
+#### Prerequisites
+
+There is an `.env`-file in the `npm` directory. Please enter your domain, npm should be accessible at.
+You can set up a DNS record for `npm.example.com` for example. Use this domain here.
+
+#### Starting the container
+
+Inside the `npm` directory do:
+
+```shell
+docker compose up -d
+```
+
+If you get any errors, make sure you followed every step of [Setting up Docker](#setting-up-docker) correctly.
+
+If everything went well, you can access Nginx Proxy Manager at `<your public ip-address>:81`.
+You can find how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
 
 ### SSL Certificates
 
@@ -241,7 +288,14 @@ The `monitoring`-stack contains the following services:
 * [Cadvisor](https://github.com/google/cadvisor): Container monitoring
 * [Node Exporter](https://github.com/prometheus/node_exporter): Prometheus exporter for machine metrics
 
-### Configuration
+### Setup
+
+In case you have problems following the DNS and NPM setup, take a look here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
+
+#### Prerequisites
+
+Add the missing fields in `monitoring/.env`. 
+`GRAFANA_DOMAIN` is the domain you want to access Grafana from, e.g. `grafana.example.com`.
 
 #### DNS
 
@@ -272,6 +326,14 @@ Add a Proxy Host for:
   * SSL: make sure to use [your SSL certificate](#dns-cloudflare-proxy)
   * SSL/Force SSL: `true`
 
+#### Deployment
+
+You can now move to the `monitoring` directory and start all the services using:
+
+```shell
+docker compose up -d
+```
+
 #### Grafana
 
 Add the following data source:
@@ -299,28 +361,24 @@ This configuration is based on the following sources:
 
 ### Prerequisites
 
-Create file `.env` in `./nextcloud` directory:
+Edit file `.env` in `nextcloud` directory. You need to add the following variables in the `.env` file
 
-```shell
-touch ./.env
-```
-Add the following variables in the `.env` file
-```text
-MYSQL_ROOT_PASSWORD=<ROOT_PASSWORD>
-MYSQL_PASSWORD=<PASSWORD>
-NEXTCLOUD_TRUSTED_DOMAINS=<DOMAIN>
-OVERWRITEHOST=<DOMAIN>
-```
+* `NEXTCLOUD_TRUSTED_DOMAINS`: the domains you want to access your Nextcloud from, e.g. `nextcloud.example.com`
+* `OVERWRITEHOST`: the main domain you want to access your Nextcloud from, e.g. `nextcloud.example.com`
+* `MYSQL_ROOT_PASSWORD`: Insert a strong password, you don't need to use it anytime. This will be used inside the container only. You can use a password generator.
+* `MYSQL_PASSWORD`: insert a different strong password
 
 ### Installation
 
-Build and run the stack:
+Go to the `nextcloud` directory and run the stack:
 
 ```shell
 docker compose up -d
 ```
 
 ### Configuration
+
+In case you have problems following the DNS and NPM setup, take a look here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
 
 #### DNS
 
@@ -393,12 +451,39 @@ Follow the official documentation to set up mailserver: https://docker-mailserve
 
 ### SSL
 
+It is highly recommended that you use SSL encryption for your mail.
+Since Nginx Proxy Manager already generates certificates for us, we can just use those. 
 SSL certificates are generated by Nginx Proxy Manager to the external volume `letsencrypt-data`.
 For some reason, Nginx Proxy Manager saves the certificates in the directory `/etc/letsencrypt/live/npm-<number>`.
 Therefore, the certificate location must be updated manually.
 You need to check with folder contains the right certificates and change the environment variables in the docker compose file accordingly.
 
 ### Setup
+
+Enter the missing environment variables in `mail/.env`.
+Both `DOMAIN_NAME` and `OVERRIDE_HOSTNAME` should be your mailserver's domain, e.g. `mail.example.com`
+`ROUNDCUBE_DOMAIN` is the domain you want to access you webmail client from, e.g. `roundcube.example.com`
+
+`SSL_CERT_PATH` is the path of your `fullchain.pem` and `SSL_KEY_PATH` is the path of your `privkey.pem` in your letsencrypt volume.
+The directory should look like `/etc/letsencrypt/live/npm-2`. 
+So your key's location is `/etc/letsencrypt/live/npm-2/privkey.pem` and your cert's location is `/etc/letsencrypt/live/npm-2/fullchaim.pem`.
+
+If you don't know where to find them, just do
+
+```shell
+docker exec nginx-proxy-mananer bash -c "ll /etc/letsencrypt/live"
+```
+
+This should give you all possible directories. If you have multiple folders, visit your NPM interface, go to SSL Certificates and hover over the three dots next to the right certificate.
+This is the correct number.
+
+Now move to the `mail` directory and start the service for the first time:
+
+```shell
+docker compose up -d
+```
+
+There are still some things to do now:
 
 Add a postmaster alias:
 
@@ -421,12 +506,21 @@ docker exec -it mailserver setup config dkim keysize 1024
 I had some issues earlier when using the default keysize of 2048.
 You need the value later to set up DNS-records.
 
-The vaulue is saved inside the container.
+The value is saved inside the container.
 Just display the contents of the file using:
 
 ```shell
-docker exec —it mailserver bash —c "cat /tmp/docker—maitserver/opendkim/keys/<your domain>/mail.txt"
+docker exec —it mailserver bash —c "cat rsa-1024-mail-<your domain>.public.txtt"
 ```
+
+Now restart everything using:
+
+```shell
+docker compose down
+docker compose up -d
+```
+
+And you are good to go. Check the logs using `docker logs -f mailserver` to see if there are any issues.
 
 ### DNS
 
@@ -437,14 +531,25 @@ In my case, adding these records worked:
 ```text
 MX  example.com         mail.example.com
 A   mail.example.com    <your ip-address>
-TXT -dmarc              v=DMARC1; p=reject; sp=reject; fo=1; ri=86400
+TXT _dmarc              v=DMARC1; p=reject; sp=reject; fo=1; ri=86400
 TXT example.com         v=spf1 mx -all
-TXT dkim._domainkey     <DKIM key generated in the step above>
+TXT mail._domainkey     v=DKIM1; h=sha256; k=rsa; p=ABC124...
 ```
 
-Make sure to include your e-mail address to get DMARC reports.
+The value in `mail._domainkey` should be the value you just generated.
 
-### Connect to clients
+### Roundcube
+
+Of course, you would want to access your emails. For this purpose we have Roundcube. This is an open source webmail client.
+To use it, just set up a DNS record and a proxy host for Roundcube ([DNS, Proxy, Cloudflare](#dns-proxy-cloudflare)) and you can use Roundcube to read and compose emails.
+
+Use `user@example.com` as username. You can create new users using:
+
+```shell
+docker exec -it mailserver setup email add <user>@<your domain>
+```
+
+### Connect to other clients
 
 You can connect access the mailbox via roundcube or configure your e-mail client of choice:
 
