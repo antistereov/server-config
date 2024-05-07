@@ -1,7 +1,6 @@
 # Server Config
 
-This README serves as a guide for setting up your own server with useful tools. The starting point is a usable server with root access. An operating system does not need to be installed yet.
-This configuration is opinionated. Please check out the [Remark](#remark).
+This README serves as a guide for setting up your own server with useful tools. The starting point is a server with root access. An operating system does not need to be installed yet.
 
 If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequisites).
 
