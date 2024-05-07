@@ -47,6 +47,7 @@ services:
     container_name: roundcube
     volumes:
       - roundcube-data:/var/roundcube/db
+    restart: unless-stopped
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=sqlite
       - ROUNDCUBEMAIL_DEFAULT_HOST=tls://${DOMAIN_NAME}
