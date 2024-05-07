@@ -45,8 +45,6 @@ First, you need to clone this repository:
 git clone https://github.com/antistereov/server-config.git
 ```
 
-Now you can go on 
-
 If you want to deploy one of the Docker container stacks, first take a look at the respective section in this README and make sure everything is set (e.g. all the environment variables). Once you completed the setup just move to respective directory and do:
 
 ```shell
