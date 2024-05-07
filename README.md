@@ -2,16 +2,25 @@
 
 This README serves as a guide for setting up your own server with useful tools. The starting point is a server with root access. An operating system does not need to be installed yet.
 
+These tools are included:
+
+* **Cloud:** [Nextcloud](https://nextcloud.com/)
+* **Mail:** [Docker Mailserver](https://github.com/docker-mailserver/docker-mailserver) as mailserver and [Roundcube](https://roundcube.net/) as webmail client
+* **Monitoring:** [Grafana](https://grafana.com/) to visualize data from [Prometheus](https://prometheus.io/docs/introduction/overview/) using system metrics from [Node Exporter](https://github.com/prometheus/node_exporter) and docker metrics from [cAdvisor](https://github.com/google/cadvisor)
+* **Proxy:** [Nginx Proxy Manager](https://nginxproxymanager.com/)
+* **Backup:** Backing up all containers and volumes using a shell script.
+
 If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequisites).
 
-If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. 
-These containers include a Nextcloud instance, a Mailserver, monitoring solutions, a reverse proxy manager and some utilities.
+If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. Here's a guide on how to install the services: [Installation](#installation).
+
+My preconfigured services include a Nextcloud instance, a mailserver, monitoring solutions, a reverse proxy manager and some utilities.
 You can run each stack individually. Just check out the corresponding section:
 
 * [Nginx Proxy Manager](#nginx-proxy-manager)
 * [Monitoring](#monitoring)
 * [Nextcloud](#nextcloud)
-* [Mailserver](#mailserver)
+* [Mail](#mail)
 
 I also created a backup script that backs up all containers and Docker volumes.
 You can use a cron job to run this script periodically.
@@ -29,6 +38,28 @@ If you are using another DNS provider, some configuration steps might be differe
 Two notes on Docker: 
 * I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management. I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
 * I use an external docker network to connect all services. This way, only port `80` and `443` get exposed. Routing is done by Nginx Proxy Manager. Everything else stays in the Docker network.
+
+## Installation
+
+First, you need to clone this repository:
+
+```shell
+git clone https://github.com/antistereov/server-config.git
+```
+
+Now you can go on 
+
+If you want to deploy one of the Docker container stacks, first take a look at the respective section in this README and make sure everything is set (e.g. all the environment variables). Once you completed the setup just move to respective directory and do:
+
+```shell
+docker compose up -d
+```
+
+**Note:** Backup is no stack but a shell script. Check out [Backup](#backup) for more information on how to set it up.
+
+## Update
+
+To update 
 
 ## Prerequisites
 
@@ -435,7 +466,7 @@ Add these lines to `nextcloud-data/config/config.php`:
 
 Alternatively, you can set these values using occ: [occ config commands](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/occ_command.html#config-commands)
 
-## Mailserver
+## Mail
 
 This section is based on the following sources:
 
@@ -446,7 +477,7 @@ I'm using [Docker Mailserver](https://github.com/docker-mailserver/docker-mailse
 
 > You need to change `hostname`, `domainname` in `docker-compose.yml` and `OVERRIDE_HOSTNAME` in `mailserver.env` to your domain.
 
-Follow the official documentation to set up mailserver: https://docker-mailserver.github.io/docker-mailserver/latest/
+I can highly recommend to follow the official documentation to set up your mailserver: https://docker-mailserver.github.io/docker-mailserver/latest/
 
 ### SSL
 
@@ -535,7 +566,14 @@ TXT example.com         v=spf1 mx -all
 TXT mail._domainkey     v=DKIM1; h=sha256; k=rsa; p=ABC124...
 ```
 
-The value in `mail._domainkey` should be the value you just generated.
+The value in `mail._domainkey` should be the DKIM you just generated in the section above.
+
+You should also set up a PTR record on your host. For Hetzner servers, follow this [guide](https://docs.hetzner.com/dns-console/dns/general/reverse-dns/). The PTR record tells what FQDN your server's IP should resolve to. Use the name of your Mailserver, e.g. `mail.example.com`. For other server providers just look for PTR records or reverse DNS.
+
+You can check your settings using:
+
+* [MXToolbox](https://mxtoolbox.com/): insert the name of your mailserver, e.g. `mail.example.com`
+* [Mail Tester](https://www.mail-tester.com/): send an email to the provided address to check if you might get blacklisted.
 
 ### Roundcube
 
