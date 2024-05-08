@@ -34,8 +34,10 @@ I'm using Cloudflare as my DNS and domain provider. For me, this makes the proce
 If you are using another DNS provider, some configuration steps might be different from mine.
 
 Two notes on Docker: 
-* I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management. I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
-* I use an external docker network to connect all services. This way, only port `80` and `443` get exposed. Routing is done by Nginx Proxy Manager. Everything else stays in the Docker network.
+* I like to use Docker volumes for persistent storage instead of local directories since these are easier to back up, and you cannot destroy your containers with user rights management.
+  I strongly recommend you using Docker volumes as well. This would have saved me days trying to fix things when setting up my server for the first time.
+* I use an external docker network to connect all services. This way, only port `80` and `443` get exposed. Routing is done by Nginx Proxy Manager.
+  Everything else stays in the Docker network.
 
 ## Installation
 
@@ -45,7 +47,14 @@ First, you need to clone this repository:
 git clone https://github.com/antistereov/server-config.git
 ```
 
-If you want to deploy one of the Docker container stacks, first take a look at the respective section in this README and make sure everything is set (e.g. all the environment variables). Once you completed the setup just move to respective directory and do:
+Now there are still a few things you need to do before you can start:
+
+* Please consider [changing your SSH port](#changing-ssh-port) and [setting up a firewall](#firewall-settings).
+* Make sure Docker is installed and correctly set up, more information here: [Setting up Docker](#setting-up-docker).
+* Set up [DNS records and a proxy](#dns-proxy-cloudflare).
+
+If you want to deploy one of the Docker container stacks, first take a look at the respective section in this README and make sure everything is set (e.g. all the environment variables). 
+Once you completed the setup just move to respective directory and do:
 
 ```shell
 docker compose up -d
@@ -97,11 +106,11 @@ Then you can run `installimage` to start the installation script.
     ```
 2. Create new user:
     ```shell
-    adduser <username>
+    adduser username
     ```
 3. Granting sudo privileges 
     ```shell
-    usermod -aG sudo <username>
+    usermod -aG sudo username
     ```
 4. Update the system:
     ```shell
@@ -109,20 +118,31 @@ Then you can run `installimage` to start the installation script.
     ```
 5. *(You can skip this step if you don't like these tools.)* Install applications:
     ```shell
-    sudo apt install nala fish neofetch 
+    sudo apt install nala fish git
     ```
-6. Install docker by following this tutorial: [Installation methods](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
-7. Granting docker privileges
+    and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account)
+6. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
-    groupadd docker
-    usermod -aG docker <username>
+    ssh-keygen -t ed25519 -C your@email.com
     ```
-8. Reboot the system and log in as `<username>`.
+7. Setting your Git username and mail for every repository on your computer
+   ```shell
+   git config --global user.name "Mona Lisa"
+   git config --global user.email "YOUR_EMAIL"
+   ```
+8. Reboot the system and log in as `username`.
 9. *(You can skip this step if you don't like fish.)* Change default shell to `fish`:
     ```shell
     chsh -s $(which fish)
     ```
-   
+    Now restart the terminal to applyt this change.
+10. I like to use [Homebrew](https://docs.brew.sh/Homebrew-on-Linux) to install command line tools:
+    ```shell
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fish_add_path -U /home/linuxbrew/.linuxbrew/bin
+    set -Ux HOMEBREW_NO_ENV_HINTS 1 
+    ```
+       
 ### Changing SSH port
 
 This configuration is based on the following sources:
@@ -202,18 +222,13 @@ For further information, take a look at Hetzner's documentation: [Access Storage
 
 ### Setting up Docker
 
-Generate an SSH-key to be able to access the Server Config repository.
+Install docker by following this tutorial: [Installation methods](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+
+Granting docker privileges:
 
 ```shell
-ssh-keygen -t ed25519 -C <email>
-```
-
-Add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account)
-
-Clone repository:
-
-```shell
-git clone <repository-url>
+groupadd docker
+usermod -aG docker <username>
 ```
 
 Create the docker network:
