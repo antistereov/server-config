@@ -120,12 +120,12 @@ Then you can run `installimage` to start the installation script.
     ```shell
     sudo apt install nala fish git
     ```
-    and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account)
+    and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
 6. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
     ssh-keygen -t ed25519 -C your@email.com
     ```
-7. Setting your Git username and mail for every repository on your computer
+7. Setting your Git username and mail for every repository on your computer:
    ```shell
    git config --global user.name "Mona Lisa"
    git config --global user.email "YOUR_EMAIL"
@@ -142,6 +142,13 @@ Then you can run `installimage` to start the installation script.
     fish_add_path -U /home/linuxbrew/.linuxbrew/bin
     set -Ux HOMEBREW_NO_ENV_HINTS 1 
     ```
+11. Set useful aliases (e.g. to be able to use `docker compose` via `dc`):
+    ```shell
+    alias --save dc="docker compose"
+    alias --save dps="docker ps  --format 'table {{.Names}}\t{{.Status}}\t{{.RunningFor}}'"
+    alias --save dl="docker logs"
+    alias --save de="docker exec"
+    ``` 
        
 ### Changing SSH port
 
