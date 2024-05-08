@@ -135,7 +135,7 @@ Then you can run `installimage` to start the installation script.
     ```shell
     chsh -s $(which fish)
     ```
-    Now restart the terminal to applyt this change.
+    Now restart the terminal to apply this change.
 10. I like to use [Homebrew](https://docs.brew.sh/Homebrew-on-Linux) to install command line tools:
     ```shell
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
