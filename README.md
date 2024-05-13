@@ -146,6 +146,14 @@ Then you can run `installimage` to start the installation script.
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
+13. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+    ```text
+    # Enable zoxide
+    zoxide init fish | source
+
+    # Enable fzf
+    fzf --fish | source
+    ```
 12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
     ```shell
