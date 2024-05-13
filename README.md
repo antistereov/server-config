@@ -118,35 +118,38 @@ Then you can run `installimage` to start the installation script.
     ```
 5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/)
 6. Install fish using `homebrew` (my preferred shell)
-7. Add fish shell to shells:
+   ```shell
+   brew install fish
+   ```
+8. Add fish shell to shells:
    ```shell
    echo $(which fish) | sudo tee -a /etc/shells
    ```
-8. Make `fish` the default shell:
+9. Make `fish` the default shell:
    ```shell
    chsh -s $(which fish)
    ```
    Restart the terminal. `fish` should now be the default shell.
-9. Add `homebrew` application path to `fish` paths:
+10. Add `homebrew` application path to `fish` paths:
     ```shell
     fish_add_path /home/linuxbrew/.linuxbrew/bin
     ```
-10. Disable environment hints in `homebrew`:
+11. Disable environment hints in `homebrew`:
     ```shell
     set -Ux HOMEBREW_NO_ENV_HINTS 1
     ```
-11. Create useful aliases:
+12. Create useful aliases:
     ```shell
     alias --save dc="docker compose"
     alias --save dl="docker logs"
     alias --save de="docker exec"
     alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
     ```
-12. Install useful tools:
+13. Install useful tools:
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
-13. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+14. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
