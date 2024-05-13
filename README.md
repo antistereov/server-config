@@ -234,6 +234,13 @@ sudo ufw allow http https
 ### Mounting Storage Box
 
 I use a [Storage Box](https://docs.hetzner.com/robot/storage-box/) provided by Hetzner to store backups of my Docker volumes and containers.
+Make sure that Samba/CIFS and external reachablitiy is enabled for your storage box.
+
+Install dependencies:
+
+```shell
+sudo apt install cifs-utils
+```
 
 Make sure to mount the storage box to `/backup` on the server and enable encryption. Add this line to `/etc/fstab`:
 
