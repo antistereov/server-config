@@ -17,7 +17,6 @@ services:
       - NPM_DOMAIN=${NPM_DOMAIN}
     ports:
       - '80:80'
-      - '81:81'
       - '443:443'
     volumes:
       - npm-data:/data
