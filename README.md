@@ -116,39 +116,51 @@ Then you can run `installimage` to start the installation script.
     ```shell
     sudo apt update && sudo apt upgrade -y
     ```
-5. *(You can skip this step if you don't like these tools.)* Install applications:
+5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/)
+6. Install fish using `homebrew` (my preferred shell)
+7. Add fish shell to shells:
+   ```shell
+   echo $(which fish) | sudo tee -a /etc/shells
+   ```
+8. Make `fish` the default shell:
+   ```shell
+   chsh -s $(which fish)
+   ```
+   Restart the terminal. `fish` should now be the default shell.
+9. Add `homebrew` application path to `fish` paths:
     ```shell
-    sudo apt install nala fish git
+    fish_add_path /home/linuxbrew/.linuxbrew/bin
     ```
-    and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
-6. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
+10. Disable environment hints in `homebrew`:
+    ```shell
+    set -Ux HOMEBREW_NO_ENV_HINTS 1
+    ```
+11. Create useful aliases:
+    ```shell
+    alias --save dc="docker compose"
+    alias --save dl="docker logs"
+    alias --save de="docker exec"
+    alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
+    ```
+12. Install useful tools:
+    ```shell
+    brew install zoxide fzf bat fd fisher
+    ```
+12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
+    I like to use these:
+    ```shell
+    fisher install jethrokuan/z PatrickF1/fzf.fish IlanCosman/tide@v6
+    ```
+14. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
     ssh-keygen -t ed25519 -C your@email.com
     ```
-7. Setting your Git username and mail for every repository on your computer:
+    and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
+15. Setting your Git username and mail for every repository on your computer:
    ```shell
    git config --global user.name "Mona Lisa"
    git config --global user.email "YOUR_EMAIL"
    ```
-8. Reboot the system and log in as `username`.
-9. *(You can skip this step if you don't like fish.)* Change default shell to `fish`:
-    ```shell
-    chsh -s $(which fish)
-    ```
-    Now restart the terminal to apply this change.
-10. I like to use [Homebrew](https://docs.brew.sh/Homebrew-on-Linux) to install command line tools:
-    ```shell
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fish_add_path -U /home/linuxbrew/.linuxbrew/bin
-    set -Ux HOMEBREW_NO_ENV_HINTS 1 
-    ```
-11. Set useful aliases (e.g. to be able to use `docker compose` via `dc`):
-    ```shell
-    alias --save dc="docker compose"
-    alias --save dps="docker ps  --format 'table {{.Names}}\t{{.Status}}\t{{.RunningFor}}'"
-    alias --save dl="docker logs"
-    alias --save de="docker exec"
-    ``` 
        
 ### Changing SSH port
 
