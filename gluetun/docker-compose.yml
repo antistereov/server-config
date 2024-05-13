@@ -1,0 +1,17 @@
+networks:
+  gluetun_network:
+    external: true
+
+services:
+  gluetun:
+    container_name: gluetun
+    image: qmcgaw/gluetun
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+    volumes:
+      - ./wp0.conf:/gluetun/wireguard/wg0.conf
+    networks:
+      gluetun_network:
