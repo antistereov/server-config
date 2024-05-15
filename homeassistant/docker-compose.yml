@@ -1,0 +1,16 @@
+volumes:
+  homeassistant_config:
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    ports:
+      - "8123:8123"
+    volumes:
+      - homeassistant_config:/config
+      - ./certificates:/ssl
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
