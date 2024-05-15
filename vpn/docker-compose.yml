@@ -1,6 +1,6 @@
 networks:
-  home_network:
-    external: true 
+  default_network:
+    external: true
 
 volumes:
   wireguard_config:
@@ -16,15 +16,16 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
+      - PEERS=1
       - SERVERURL=${SERVERURL}
       - SERVERPORT=51820
     volumes:
-      - wireguard-config:/config
+      - wireguard_config:/config
     ports:
       - 51820:51820/udp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped
     networks:
-      home_network:
-        ipv4_address: 172.30.0.10
+      default_network:
+        ipv4_address: 10.0.0.10
