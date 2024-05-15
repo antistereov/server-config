@@ -428,7 +428,7 @@ Add the missing fields in `monitoring/.env`.
 
 #### DNS
 
-Add an A-record for Grafana, Nginx Proxy Manager and Portainer.
+Add an A-record for Grafana.
 
 #### Nginx Proxy Manager
 
