@@ -1,30 +1,25 @@
 networks:
-  proxy:
+  default_network:
     external: true
 
 volumes:
-  npm-data:
-  letsencrypt-data:
+  npm_data:
+  letsencrypt_data:
     external: true
-    name: letsencrypt-data
+    name: letsencrypt_data
 
 services:
-  nginx-proxy-manager:
-    container_name: nginx-proxy-manager
+  npm:
+    container_name: npm
     image: jc21/nginx-proxy-manager:latest
     restart: unless-stopped
-    environment:
-      - NPM_DOMAIN=${NPM_DOMAIN}
     ports:
       - '80:80'
       - '443:443'
     volumes:
-      - npm-data:/data
-      - letsencrypt-data:/etc/letsencrypt
+      - npm_data:/data
+      - letsencrypt_data:/etc/letsencrypt
     networks:
-      - proxy
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "https://${NPM_DOMAIN}" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      default_network:
+        ipv4_address: 10.0.0.5
+      
