@@ -294,7 +294,7 @@ docker network create --subnet=10.0.0.0/24 default_network
 Create a volume for SSL certificates:
 
 ```shell
-docker volume create --name letsencrypt-data
+docker volume create --name letsencrypt_data
 ```
 
 ### DNS, Proxy, Cloudflare
