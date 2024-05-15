@@ -121,7 +121,10 @@ Then you can run `installimage` to start the installation script.
     sudo apt update && sudo apt upgrade -y
     ```
 5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/)
-6. Install fish using `homebrew` (my preferred shell)
+   ```shel
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+7. Install fish using `homebrew` (my preferred shell)
    ```shell
    brew install fish
    ```
@@ -157,9 +160,6 @@ Then you can run `installimage` to start the installation script.
     ```text
     # Enable zoxide
     zoxide init fish | source
-
-    # Enable fzf
-    fzf --fish | source
     ```
 12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
