@@ -124,35 +124,40 @@ Then you can run `installimage` to start the installation script.
    ```shel
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
-7. Install fish using `homebrew` (my preferred shell)
+6. Install fish using `homebrew` (my preferred shell)
    ```shell
    brew install fish
-   ```
-8. Add fish shell to shells:
-   ```shell
+   # Add fish to shells
    echo $(which fish) | sudo tee -a /etc/shells
    ```
-9. Make `fish` the default shell:
+
+   If you don't want to use `homebrew` or if you are on an ARM device, you can install fish using:
+   ```shell
+   sudo apt-add-repository ppa:fish-shell/release-3
+   sudo apt update
+   sudo apt install fish
+   ```
+7. Make `fish` the default shell:
    ```shell
    chsh -s $(which fish)
    ```
    Restart the terminal. `fish` should now be the default shell.
-10. Add `homebrew` application path to `fish` paths:
+8. Add `homebrew` application path to `fish` paths:
     ```shell
     fish_add_path /home/linuxbrew/.linuxbrew/bin
     ```
-11. Disable environment hints in `homebrew`:
+9. Disable environment hints in `homebrew`:
     ```shell
     set -Ux HOMEBREW_NO_ENV_HINTS 1
     ```
-12. Create useful aliases:
+10. Create useful aliases:
     ```shell
     alias --save dc="docker compose"
     alias --save dl="docker logs"
     alias --save de="docker exec"
     alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
     ```
-13. Install useful tools:
+11. Install useful tools:
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
@@ -166,12 +171,12 @@ Then you can run `installimage` to start the installation script.
     alias --save bat=batcat
     ```
     
-15. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+12. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
     ```
-12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
+13. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
     ```shell
     fisher install jethrokuan/z PatrickF1/fzf.fish IlanCosman/tide@v6
