@@ -4,10 +4,12 @@ This README serves as a guide for setting up your own server with useful tools. 
 
 These tools are included:
 
+* **VPN Server:** [Wireguard](https://github.com/linuxserver/docker-wireguard)
+* **Reverse Proxy:** [Nginx Proxy Manager](https://nginxproxymanager.com/)
+* **Monitoring:** [Grafana](https://grafana.com/) to visualize data from [Prometheus](https://prometheus.io/docs/introduction/overview/) using system metrics from [Node Exporter](https://github.com/prometheus/node_exporter) and docker metrics from [cAdvisor](https://github.com/google/cadvisor)
 * **Cloud:** [Nextcloud](https://nextcloud.com/)
 * **Mail:** [Docker Mailserver](https://github.com/docker-mailserver/docker-mailserver) as mailserver and [Roundcube](https://roundcube.net/) as webmail client
-* **Monitoring:** [Grafana](https://grafana.com/) to visualize data from [Prometheus](https://prometheus.io/docs/introduction/overview/) using system metrics from [Node Exporter](https://github.com/prometheus/node_exporter) and docker metrics from [cAdvisor](https://github.com/google/cadvisor)
-* **Proxy:** [Nginx Proxy Manager](https://nginxproxymanager.com/)
+* **Home Automation:** [Home Assistant](https://www.home-assistant.io/)
 * **Backup:** Backing up all containers and volumes using a shell script.
 
 If your server does not have Docker installed, if you need help setting up DNS records or, if your server is even missing an OS, start [here](#prerequisites).
@@ -15,10 +17,12 @@ If your server does not have Docker installed, if you need help setting up DNS r
 If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. Here's a guide on how to install the services: [Installation](#installation). 
 You can run each stack individually. Just check out the corresponding section:
 
+* [VPN](#vpn)
 * [Nginx Proxy Manager](#nginx-proxy-manager)
 * [Monitoring](#monitoring)
 * [Nextcloud](#nextcloud)
 * [Mail](#mail)
+* [Home Assistant](#home-assistant)
 
 I also created a backup script that backs up all containers and Docker volumes.
 You can use a cron job to run this script periodically.
@@ -300,7 +304,7 @@ For the impatient, here is a short overview:
   * Name: `npm.example.com` (This is the domain you want to access NPM from.)
   * Destination: your server's public IP
   * Proxied: `true`, since we want to use a reverse proxy later on
-* Set up Nginx Proxy Manager following this section: [Setup](#setup). If you are able to access NPM at `<your public ip>:81`, you are good to go.
+* Set up Nginx Proxy Manager following this section: [Setup](#setup). If you are able to access NPM at `http://10.0.0.5:81` through your VPN, you are good to go.
 * Generate SSL certificates
   * in Nginx Proxy Manager go to SSL Certificates
   * click on *Add SSL certificate* and enter the following values:
@@ -321,6 +325,34 @@ For the impatient, here is a short overview:
 
 If you want to add more proxy hosts, just repeat this whole process. You can scip accessing NPM via `<your public ip>:81` and access it directly via `https://npm.example.com`
 
+## VPN
+
+This script sets up a VPN server. This is required to access the Nginx Proxy Manager and other tools.
+These won't be exposed to the world wide web for security reasons.
+
+### Prerequisites
+
+The only thing you need to do is adding your server URL to the `.env`-file.
+This can either be a fqdn or the public IP address of your server.
+
+### Connect to VPN
+
+The container automatically generates a configuration file that you can access using this command:
+
+```shell
+docker exec homeassistant bash -c "cat /config/peer1/peer1.conf"
+```
+
+On your device create a new file `wg0.conf` and paste the contents of `peer1.conf`. 
+Install the [VPN client](https://www.wireguard.com/install/) on your device and connect to the VPN by adding `wg0.conf` to the client.
+
+### Access containers through VPN
+
+You can now access the following containers using the specified address:
+
+* Nginx Proxy Manager: `http://10.0.0.5:81`
+* Nextcloud: `http://10.0.0.8:10`
+
 ## Nginx Proxy Manager
 
 [Nginx Proxy Manager](https://nginxproxymanager.com/), or NPM for short, is a tool that simplifies the management of reverse proxies, 
@@ -336,7 +368,6 @@ Make sure to add SSL certificates for your domain. The tutorial in the subsectio
 Nginx Proxy Manager exposes the following ports:
 
 * `80`: http
-* `81`: Nginx Proxy Manager
 * `443`: https
 
 ### Setup
@@ -356,7 +387,8 @@ docker compose up -d
 
 If you get any errors, make sure you followed every step of [Setting up Docker](#setting-up-docker) correctly.
 
-If everything went well, you can access Nginx Proxy Manager at `<your public ip-address>:81`.
+If everything went well, you need to connect to the VPN (instructions to set up VPN: [here](#vpn)) and access the GUI here: `http://10.0.0.5:81`
+
 You can find how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
 
 ### SSL Certificates
@@ -396,18 +428,8 @@ Add an A-record for Grafana, Nginx Proxy Manager and Portainer.
 
 Add a Proxy Host for:
 
-* Portainer: 
-  * Destination: `http://portainer:9000`
-  * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
-  * SSL/Force SSL: `true`
 * Grafana:
   * Destination: `http://grafana:3000`
-  * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
-  * SSL/Force SSL: `true`
-* Nginx Proxy Manager:
-  * Destination: `http://nginx-proxy-manager:81`
   * Block common exploits: `true`
   * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
@@ -678,6 +700,38 @@ You can connect access the mailbox via roundcube or configure your e-mail client
   * Connection security: `STARTTLS`
   * Authentication method: Normal password
   * User name: `user@example.com`
+
+## Home Assistant
+
+If you need help configuring your `homeassistant` visit the [official documentation](https://www.home-assistant.io/docs/).
+
+### SSL
+
+If you only want to access your `homeassistant` in your local network, you can generate a self-signed certificate using my tool: [openssl.sh](https://github.com/antistereov/openssl.sh).
+You need to copy the following files to `server-config/homeassistant/certificates` no matter if they are self-signed or signed by a CA
+
+* `fullchain.pem`
+* `privkey.pem`
+
+Now access the configuration by creating another container and mounting the volumes from `homeassistant`.
+
+```
+docker run --rm --volumes-from homeassistant -it ubuntu bash
+```
+Now you should have root access to the newly created container. Inside the container do:
+
+```
+apt update && apt install -y nala
+nala /config/configuration.yml
+```
+
+Add the following lines:
+
+```
+http:
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+```
 
 ## Backup
 
