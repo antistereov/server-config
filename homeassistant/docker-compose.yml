@@ -19,5 +19,5 @@ services:
     restart: unless-stopped
     networks:
       default_network:
-        ipv4_address: 10.0.0.6
+        ipv4_address: 10.0.0.16
     privileged: true
