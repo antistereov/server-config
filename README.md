@@ -275,7 +275,7 @@ usermod -aG docker <username>
 Create the docker network:
 
 ```shell
-docker network create proxy
+docker network create --subnet=172.30.0.0/16 home_network
 ```
 
 Create a volume for SSL certificates:
