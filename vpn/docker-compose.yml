@@ -1,5 +1,9 @@
+networks:
+  home_network:
+    external: true 
+
 volumes:
-  wireguard-config:
+  wireguard_config:
 
 services:
   wireguard:
@@ -7,19 +11,13 @@ services:
     container_name: wireguard
     cap_add:
       - NET_ADMIN
-      - SYS_MODULE #optional
+      - SYS_MODULE
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - SERVERURL=${SERVERURL}
-      - SERVERPORT=51820 #optional
-      - PEERS=1 #optional
-      - PEERDNS=auto #optional
-      - INTERNAL_SUBNET=10.13.13.0 #optional
-      - ALLOWEDIPS=0.0.0.0/0 #optional
-      - PERSISTENTKEEPALIVE_PEERS= #optional
-      - LOG_CONFS=true #optional
+      - SERVERPORT=51820
     volumes:
       - wireguard-config:/config
     ports:
@@ -27,3 +25,6 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     restart: unless-stopped
+    networks:
+      home_network:
+        ipv4_address: 172.30.0.10
