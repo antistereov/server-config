@@ -275,7 +275,7 @@ usermod -aG docker <username>
 Create the docker network:
 
 ```shell
-docker network create --subnet=172.30.0.0/16 home_network
+docker network create --subnet=172.30.0.0/16 gluetun_net
 ```
 
 Create a volume for SSL certificates:
