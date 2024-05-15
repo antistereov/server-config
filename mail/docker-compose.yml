@@ -1,16 +1,16 @@
 volumes:
-  mail-data:
-  mail-state:
-  mail-logs:
-  dms-config:
-  letsencrypt-data:
+  mail_data:
+  mail_state:
+  mail_logs:
+  dms_config:
+  letsencrypt_data:
     external: true
-    name: letsencrypt-data
+    name: letsencrypt_data
   roundcube-data:
 
 networks:
   proxy:
-    external: true
+    default_network: true
 
 services:
   mailserver:
@@ -28,12 +28,12 @@ services:
       - "587:587"  # ESMTP (explicit TLS => STARTTLS)
       - "993:993"  # IMAP4 (implicit TLS)
     volumes:
-      - mail-data:/var/mail/
-      - mail-state:/var/mail-state/
-      - mail-logs:/var/log/mail/
-      - dms-config:/tmp/docker-mailserver/
+      - mail_data:/var/mail/
+      - mail_state:/var/mail-state/
+      - mail_logs:/var/log/mail/
+      - dms_config:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
-      - letsencrypt-data:/etc/letsencrypt:ro
+      - letsencrypt_data:/etc/letsencrypt:ro
     cap_add:
       - NET_ADMIN # For Fail2Ban to work
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
     image: roundcube/roundcubemail
     container_name: roundcube
     volumes:
-      - roundcube-data:/var/roundcube/db
+      - roundcube_data:/var/roundcube/db
     restart: unless-stopped
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=sqlite
@@ -58,7 +58,7 @@ services:
     depends_on:
       - mailserver
     networks:
-      - proxy
+      - default_network
     healthcheck:
       test: [ "CMD", "curl", "-f", "https://${ROUNDCUBE_DOMAIN}" ]
       interval: 30s
