@@ -360,7 +360,10 @@ Install the [VPN client](https://www.wireguard.com/install/) on your device and 
 You can now access the following containers using the specified address:
 
 * Nginx Proxy Manager: `http://10.0.0.5:81`
-* Nextcloud: `http://10.0.0.8:10`
+* Home Assistant: `http://10.0.0.6:8123`
+* Grafana: `http://10.0.0.0.7:3000`
+* Nextcloud: `http://10.0.0.8:80`
+* Roundcube: `http://10.0.0.9:80`
 
 ## Nginx Proxy Manager
 
