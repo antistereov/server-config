@@ -156,7 +156,17 @@ Then you can run `installimage` to start the installation script.
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
-14. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+    If you don't want to use `homebrew` or if you are on an ARM device, you need to install these tools using apt:
+
+    ```shell
+    sudo apt install zoxide fzf bat fd-find
+    # Install fisher
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+    # Add alias for bat
+    alias --save bat=batcat
+    ```
+    
+15. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
