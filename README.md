@@ -123,6 +123,8 @@ Then you can run `installimage` to start the installation script.
 5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/)
    ```shel
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   # Add homebrew to path
+   fish_add_path /home/linuxbrew/.linuxbrew/bin
    ```
 6. Install fish using `homebrew` (my preferred shell)
    ```shell
@@ -130,7 +132,6 @@ Then you can run `installimage` to start the installation script.
    # Add fish to shells
    echo $(which fish) | sudo tee -a /etc/shells
    ```
-
    If you don't want to use `homebrew` or if you are on an ARM device, you can install fish using:
    ```shell
    sudo apt-add-repository ppa:fish-shell/release-3
@@ -142,22 +143,7 @@ Then you can run `installimage` to start the installation script.
    chsh -s $(which fish)
    ```
    Restart the terminal. `fish` should now be the default shell.
-8. Add `homebrew` application path to `fish` paths:
-    ```shell
-    fish_add_path /home/linuxbrew/.linuxbrew/bin
-    ```
-9. Disable environment hints in `homebrew`:
-    ```shell
-    set -Ux HOMEBREW_NO_ENV_HINTS 1
-    ```
-10. Create useful aliases:
-    ```shell
-    alias --save dc="docker compose"
-    alias --save dl="docker logs"
-    alias --save de="docker exec"
-    alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
-    ```
-11. Install useful tools:
+8. Install useful tools:
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
@@ -171,22 +157,29 @@ Then you can run `installimage` to start the installation script.
     alias --save bat=batcat
     ```
     
-12. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+ 9. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
     ```
-13. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
+10. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
     ```shell
     fisher install jethrokuan/z PatrickF1/fzf.fish IlanCosman/tide@v6
     ```
-14. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
+11. Create useful aliases:
+    ```shell
+    alias --save dc="docker compose"
+    alias --save dl="docker logs"
+    alias --save de="docker exec"
+    alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
+    ```
+12. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
     ssh-keygen -t ed25519 -C your@email.com
     ```
     and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
-15. Setting your Git username and mail for every repository on your computer:
+13. Setting your Git username and mail for every repository on your computer:
    ```shell
    git config --global user.name "Mona Lisa"
    git config --global user.email "YOUR_EMAIL"
@@ -245,7 +238,8 @@ sudo ufw limit <SSH Port Number>/tcp comment 'SSH Port Rate Limit'
 Allow http and https:
 
 ```shell
-sudo ufw allow http https
+sudo ufw allow http
+sudo ufw allow https
 ```
 
 **Note:** Docker doesn't obey these firewall settings and sets up its own settings in order to allow Docker to function as intended.
@@ -294,7 +288,7 @@ usermod -aG docker <username>
 Create the docker network:
 
 ```shell
-docker network create --subnet=172.30.0.0/16 gluetun_net
+docker network create --subnet=10.0.0.0/24 default_network
 ```
 
 Create a volume for SSL certificates:
@@ -387,13 +381,6 @@ Nginx Proxy Manager exposes the following ports:
 
 ### Setup
 
-#### Prerequisites
-
-There is an `.env`-file in the `npm` directory. Please enter your domain, npm should be accessible at.
-You can set up a DNS record for `npm.example.com` for example. Use this domain here.
-
-#### Starting the container
-
 Inside the `npm` directory do:
 
 ```shell
@@ -404,7 +391,7 @@ If you get any errors, make sure you followed every step of [Setting up Docker](
 
 If everything went well, you need to connect to the VPN (instructions to set up VPN: [here](#vpn)) and access the GUI here: `http://10.0.0.5:81`
 
-You can find how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
+You can find out how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-proxy-cloudflare).
 
 ### SSL Certificates
 
