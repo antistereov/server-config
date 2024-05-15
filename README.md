@@ -733,6 +733,8 @@ http:
   ssl_key: /ssl/privkey.pem
 ```
 
+Restart the container and you should now be able to access `homeassistant` via `https`.
+
 ## Backup
 
 The backup script is located in `backup`. This script is specific to my system. You need to change the variable `backup-parent-dir`.
