@@ -14,7 +14,8 @@ services:
     command:
       - '--path.rootfs=/host'
     networks:
-      - default_network
+      default_network:
+        ipv4_address: 10.0.0.7
     restart: unless-stopped
     volumes:
       - '/:/host:ro,rslave'
@@ -27,7 +28,8 @@ services:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     networks:
-      - default_network
+      default_network:
+        ipv4_address: 10.0.0.8
     command:
       - '--web.enable-lifecycle'
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -38,7 +40,7 @@ services:
     restart: unless-stopped
     networks:
       default_network:
-        ipv4_address: 10.0.0.7
+        ipv4_address: 10.0.0.9
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
@@ -61,7 +63,8 @@ services:
     devices:
       - /dev/kmsg
     networks:
-      - default_network
+      default_network:
+        ipv4_address: 10.0.0.10
     privileged: true
     restart: unless-stopped
 
