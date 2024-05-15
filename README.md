@@ -517,7 +517,7 @@ Add an A-record for your Nextcloud domain.
 After starting the containers and initial setup of Nextcloud you may see warnings regarding the Maintenance Window and default phone regions.
 Setting the following values should resolve these warnings.
 
-Add these lines to `nextcloud-data/config/config.php`:
+Add these lines to `/var/www/html/config/config.php`:
 ```php
   'logtimezone' => 'Europe/Berlin',
   'default_locale' => 'en_DE',
