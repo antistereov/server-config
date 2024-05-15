@@ -332,7 +332,9 @@ For the impatient, here is a short overview:
     * choose *Force SSL*
   * Click save, and now you should be able to access NPM from `https://npm.example.com`. Congratulations!
 
-If you want to add more proxy hosts, just repeat this whole process. You can access NPM via http://10.0.0.5:81 using your [VPN](#vpn).
+Keep in mind that this was just an example. Making Nginx Proxy Manager accessible from the internet might be a security risk.
+If you want to add more proxy hosts, just repeat this whole process. 
+You can access NPM via http://10.0.0.5:81 using your [VPN](#vpn).
 
 ## VPN
 
@@ -400,7 +402,7 @@ You can find out how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-p
 ### SSL Certificates
 
 Nginx Proxy Manger automatically generates certificates based on your configuration.
-These certificates will be saved in the external volume `letsencrypt-data`.
+These certificates will be saved in the external volume `letsencrypt_data`.
 If you need these certificates in another container just mount this volume to `/etc/letsencrypt` inside the container.
 
 ## Monitoring
@@ -428,7 +430,7 @@ Add the missing fields in `monitoring/.env`.
 
 #### DNS
 
-Add an A-record for Grafana.
+Add an A-record for Grafana and Roundcube.
 
 #### Nginx Proxy Manager
 
@@ -505,7 +507,7 @@ Add an A-record for your Nextcloud domain.
 
 #### Nginx Proxy Manger
 
-* Destination: `http://nextcloud-app:80`
+* Destination: `http://nextcloud_app:80`
 * Cache Assets: `true `
 * Block common exploits: `true`
 * Web socket support: `true`
