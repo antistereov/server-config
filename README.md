@@ -220,7 +220,7 @@ sudo ufw default allow outgoing
 Allow SSH (make sure to use the port specified [here](#changing-ssh-port):
 
 ```shell
-sudo ufw allow <SSH Port Number>/tcp comment 'SSH Port Rate Limit'
+sudo ufw limit <SSH Port Number>/tcp comment 'SSH Port Rate Limit'
 ```
 
 Allow http and https:
@@ -259,7 +259,11 @@ For further information, take a look at Hetzner's documentation: [Access Storage
 
 ### Setting up Docker
 
-Install docker by following this tutorial: [Installation methods](https://docs.docker.com/engine/install/ubuntu/#installation-methods)
+Install Docker (more information here: [Installation methods](https://docs.docker.com/engine/install/ubuntu/#installation-methods)):
+
+```shell
+curl -sSL https://get.docker.com | sh
+```
 
 Granting docker privileges:
 
