@@ -332,7 +332,7 @@ For the impatient, here is a short overview:
     * choose *Force SSL*
   * Click save, and now you should be able to access NPM from `https://npm.example.com`. Congratulations!
 
-If you want to add more proxy hosts, just repeat this whole process. You can scip accessing NPM via `<your public ip>:81` and access it directly via `https://npm.example.com`
+If you want to add more proxy hosts, just repeat this whole process. You can access NPM via http://10.0.0.5:81 using your [VPN](#vpn).
 
 ## VPN
 
