@@ -59,7 +59,7 @@ services:
       - mailserver
     networks:
       default_network:
-        ipv4_address: 10.0.0.9
+        ipv4_address: 10.0.0.15
     healthcheck:
       test: [ "CMD", "curl", "-f", "https://${ROUNDCUBE_DOMAIN}" ]
       interval: 30s
