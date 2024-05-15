@@ -313,7 +313,7 @@ For the impatient, here is a short overview:
   * Name: `npm.example.com` (This is the domain you want to access NPM from.)
   * Destination: your server's public IP
   * Proxied: `true`, since we want to use a reverse proxy later on
-* Set up Nginx Proxy Manager following this section: [Setup](#setup). If you are able to access NPM at `http://10.0.0.5:81` through your VPN, you are good to go.
+* Set up Nginx Proxy Manager following this section: [Setup](#setup). If you are able to access NPM at http://10.0.0.5:81 through your [VPN](#vpn), you are good to go.
 * Generate SSL certificates
   * in Nginx Proxy Manager go to SSL Certificates
   * click on *Add SSL certificate* and enter the following values:
