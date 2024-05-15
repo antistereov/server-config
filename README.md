@@ -215,6 +215,10 @@ Once done, save the file and restart the SSH service to apply the changes:
 sudo systemctl restart ssh
 ```
 
+#### Enable Key-Based Authentication
+
+You might also consider enabling key-based authentication to provide an extra layer of security. Here is a detailed guide on how to do just that: [How To Configure SSH Key-Based Authentication on a Linux Server](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server)
+
 ### Firewall Settings
 
 This configuration is based on the following sources:
@@ -430,7 +434,7 @@ Add the missing fields in `monitoring/.env`.
 
 #### DNS
 
-Add an A-record for Grafana and Roundcube.
+Add an A-record for Grafana.
 
 #### Nginx Proxy Manager
 
@@ -438,11 +442,6 @@ Add a Proxy Host for:
 
 * Grafana:
   * Destination: `http://grafana:3000`
-  * Block common exploits: `true`
-  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
-  * SSL/Force SSL: `true`
-* Roundcube:
-  * Destination: `http://roundcube:80`
   * Block common exploits: `true`
   * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
   * SSL/Force SSL: `true`
@@ -690,6 +689,16 @@ Use `user@example.com` as username. You can create new users using:
 ```shell
 docker exec -it mailserver setup email add <user>@<your domain>
 ```
+
+#### DNS, Proxy
+
+Add an A-record for roundcube and add the following Proxy Host in Nginx Proxy Manager:
+
+* Roundcube:
+  * Destination: `http://roundcube:80`
+  * Block common exploits: `true`
+  * SSL: make sure to use [your SSL certificate](#dns-proxy-cloudflare)
+  * SSL/Force SSL: `true`
 
 ### Connect to other clients
 
