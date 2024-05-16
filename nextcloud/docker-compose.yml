@@ -45,7 +45,7 @@ services:
       - nextcloud_db
       - nextcloud_redis
     healthcheck:
-      test: [ "CMD", "curl", "-f", "https://${OVERWRITEHOST}" ]
+      test: [ "CMD", "curl", "https://${OVERWRITEHOST}" ]
       interval: 30s
       timeout: 10s
       retries: 3

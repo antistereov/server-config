@@ -46,7 +46,7 @@ services:
     environment:
       - GRAFANA_DOMAIN
     healthcheck:
-      test: [ "CMD", "curl", "-f", "https://${GRAFANA_DOMAIN}" ]
+      test: [ "CMD", "curl", "https://${GRAFANA_DOMAIN}" ]
       interval: 30s
       timeout: 10s
       retries: 3
