@@ -34,9 +34,4 @@ if [ "$CURRENT_IP" != "$NEW_IP" ]; then
 
   # Restart Docker Compose services
   docker compose down && docker compose up -d
-else
-  echo "$(date +"%m/%d/%Y %H:%M:%S"): wg0.conf Endpoint is already up to date."
 fi
-
-echo "$(date +"%m/%d/%Y %H:%M:%S"): Script completed."
-
