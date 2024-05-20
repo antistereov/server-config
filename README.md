@@ -728,7 +728,7 @@ In order to be able to control the devices in your local network you need to con
 This can be done by using a VPN. [Gluetun](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md) is a tool that allows to connect single containers to a VPN.
 
 First, you need to enable a new connection to your home network using Wireguard VPN on your router. 
-On the German Fritzbox UI this can be done in Netzwerk/Freigaben/VPN (Wireguard).
+On the German Fritzbox UI this can be done in Internet/Freigaben/VPN (Wireguard).
 Create a new connection, download the configuration. Create a new file `wg0.conf` in the `homeassistant` directory and paste the contents of this file there. Now, you need to copy the endpoint domain and paste it to the `.env` file as value for `VPN_ENDPOINT_DOMAIN`.
 
 Since your router is likely to change its public IP address, you need to update the IP from time to time.
