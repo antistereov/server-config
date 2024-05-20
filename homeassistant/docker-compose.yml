@@ -6,18 +6,34 @@ networks:
     external: true
 
 services:
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    ports:
-      - "8123:8123"
+  gluetun:
+    container_name: gluetun
+    image: qmcgaw/gluetun
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
     volumes:
-      - homeassistant_config:/config
-      - ./certificates:/ssl
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-    restart: unless-stopped
+      - ./wg0.conf:/gluetun/wireguard/wg0.conf
     networks:
       default_network:
         ipv4_address: 10.0.0.16
+
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    network_mode: "service:gluetun"
     privileged: true
+    environment:
+      - HASS_DOMAIN=${HASS_DOMAIN}
+    healthcheck:
+      test: [ "CMD", "curl", "https://${HASS_DOMAIN}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
