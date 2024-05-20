@@ -9,6 +9,7 @@ services:
   gluetun:
     container_name: gluetun
     image: qmcgaw/gluetun
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     environment:
