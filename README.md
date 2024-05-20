@@ -722,18 +722,40 @@ You can connect access the mailbox via roundcube or configure your e-mail client
 
 If you need help configuring your `homeassistant` visit the [official documentation](https://www.home-assistant.io/docs/).
 
-### SSL
+### Gluetun
 
-If you only want to access your `homeassistant` in your local network, you can generate a self-signed certificate using my tool: [openssl.sh](https://github.com/antistereov/openssl.sh).
-You need to copy the following files to `server-config/homeassistant/certificates` no matter if they are self-signed or signed by a CA
+In order to be able to control the devices in your local network you need to connect `homeassistant` to your local network.
+This can be done by using a VPN. [Gluetun](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md) is a tool that allows to connect single containers to a VPN.
 
-* `fullchain.pem`
-* `privkey.pem`
+First, you need to enable a new connection to your home network using Wireguard VPN on your router. 
+On the German Fritzbox UI this can be done in Netzwerk/Freigaben/VPN (Wireguard).
+Create a new connection, download the configuration. Create a new file `wg0.conf` in the `homeassistant` directory and paste the contents of this file there. Now, you need to copy the endpoint domain and paste it to the `.env` file as value for `VPN_ENDPOINT_DOMAIN`.
 
-Now access the configuration by creating another container and mounting the volumes from `homeassistant`.
+Since your router is likely to change its public IP address, you need to update the IP from time to time.
+I created a script `dyndns.sh` in the homeassistant directory. This script looks for the corresponding IP address of your router and changes the configuration accordingly. To do this you need to:
+
+* add domain of your router using DynDNS or the DNS your router provided for your VPN connection
+* create a crontab:
+  ```shell
+  crontab -e
+  ```
+  and add the following line:
+  ```shell
+  * * * * * /path/to/dyndns.sh >> /path/to/logs 2>&1
+  ```
+  Make sure to add the correct path of the script and a valid path for the log file.
+
+### Configuration
+
+Now you need to create new DNS records for homeassistant and a new proxy host in Nginx Proxy Mangager.
+It should resolve to: `http://10.0.0.16:8123`. Make sure to enable `Websockets support` and SSL encryption.
+Now you need homeassistant to trust the proxy. To do this you need to change the configuration of `homeassistant`.
+
+You can access the configuration by creating another container and mounting the volumes from `homeassistant`.
 
 ```
 docker run --rm --volumes-from homeassistant -it ubuntu bash
+-c "apt update && apt install -y nano && nano /config/configuration.yaml"
 ```
 Now you should have root access to the newly created container. Inside the container do:
 
@@ -746,11 +768,17 @@ Add the following lines:
 
 ```
 http:
-  ssl_certificate: /ssl/fullchain.pem
-  ssl_key: /ssl/privkey.pem
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.0.0.5
+
+homeassistant:
+  auth_mfa_modules:
+    - type: totp
 ```
 
-Restart the container and you should now be able to access `homeassistant` via `https`.
+This configuration also enabled two factor authentication.
+Restart the container and you should now be able to access `homeassistant` via your newly created domain.
 
 ## Backup
 
