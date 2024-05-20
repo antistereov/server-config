@@ -734,7 +734,7 @@ Create a new connection, download the configuration. Create a new file `wg0.conf
 Since your router is likely to change its public IP address, you need to update the IP from time to time.
 I created a script `dyndns.sh` in the homeassistant directory. This script looks for the corresponding IP address of your router and changes the configuration accordingly. To do this you need to:
 
-* add domain of your router using DynDNS or the DNS your router provided for your VPN connection
+* add domain of your router using DynDNS or the DNS your router provided for your VPN connection to the `.env` file
 * create a crontab:
   ```shell
   crontab -e
@@ -779,6 +779,8 @@ homeassistant:
 
 This configuration also enabled two factor authentication.
 Restart the container and you should now be able to access `homeassistant` via your newly created domain.
+
+To make the health check work properly, you also need to configure the domain you want to access `homeassistant` from in the `.env` file.
 
 ## Backup
 
