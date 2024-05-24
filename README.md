@@ -768,6 +768,8 @@ Add the following lines:
 
 ```
 http:
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
   use_x_forwarded_for: true
   trusted_proxies:
     - 10.0.0.5
@@ -777,7 +779,7 @@ homeassistant:
     - type: totp
 ```
 
-This configuration also enabled two factor authentication.
+This configuration also enabled two factor authentication and enables IP ban to prevent brute-force attacks.
 Restart the container and you should now be able to access `homeassistant` via your newly created domain.
 
 To make the health check work properly, you also need to configure the domain you want to access `homeassistant` from in the `.env` file.
