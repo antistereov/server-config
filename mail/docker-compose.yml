@@ -6,11 +6,11 @@ volumes:
   letsencrypt_data:
     external: true
     name: letsencrypt_data
-  roundcube-data:
+  roundcube_data:
 
 networks:
-  proxy:
-    default_network: true
+  default_network: 
+    external: true
 
 services:
   mailserver:
@@ -55,8 +55,6 @@ services:
       - ROUNDCUBEMAIL_SMTP_SERVER=tls://${DOMAIN_NAME}
       - ROUNDCUBEMAIL_SMTP_PORT=587
       - ROUNDCUBE_DOMAIN=${ROUNDCUBE_DOMAIN}
-    depends_on:
-      - mailserver
     networks:
       default_network:
         ipv4_address: 10.0.0.15
