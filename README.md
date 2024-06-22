@@ -355,7 +355,7 @@ This can either be a fqdn or the public IP address of your server.
 The container automatically generates a configuration file that you can access using this command:
 
 ```shell
-docker exec homeassistant bash -c "cat /config/peer1/peer1.conf"
+docker exec wireguard bash -c "cat /config/peer1/peer1.conf"
 ```
 
 On your device create a new file `wg0.conf` and paste the contents of `peer1.conf`. 
