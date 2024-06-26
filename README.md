@@ -4,6 +4,7 @@ This README serves as a guide for setting up your own server with useful tools. 
 
 These tools are included:
 
+* **Authentication Server:** [Authentik](https://goauthentik.io/)
 * **VPN Server:** [Wireguard](https://github.com/linuxserver/docker-wireguard)
 * **Reverse Proxy:** [Nginx Proxy Manager](https://nginxproxymanager.com/)
 * **Monitoring:** [Grafana](https://grafana.com/) to visualize data from [Prometheus](https://prometheus.io/docs/introduction/overview/) using system metrics from [Node Exporter](https://github.com/prometheus/node_exporter) and docker metrics from [cAdvisor](https://github.com/google/cadvisor)
@@ -17,6 +18,7 @@ If your server does not have Docker installed, if you need help setting up DNS r
 If Docker is already installed, and you only want to deploy the services, you can check out my preconfigured stacks of Docker containers. Here's a guide on how to install the services: [Installation](#installation). 
 You can run each stack individually. Just check out the corresponding section:
 
+* [Authentik](#authentik)
 * [VPN](#vpn)
 * [Nginx Proxy Manager](#nginx-proxy-manager)
 * [Monitoring](#monitoring)
@@ -338,12 +340,11 @@ For the impatient, here is a short overview:
 
 Keep in mind that this was just an example. Making Nginx Proxy Manager accessible from the internet might be a security risk.
 If you want to add more proxy hosts, just repeat this whole process. 
-You can access NPM via http://10.0.0.5:81 using your [VPN](#vpn).
+You can access NPM via http://10.0.0.5:81 using your [VPN](#vpn) or via https://npm.example.com if you set up a reverse proxy for Nginx Proxy Manager itself.
 
 ## VPN
 
-This script sets up a VPN server. This is required to access the Nginx Proxy Manager and other tools.
-These won't be exposed to the world wide web for security reasons.
+This script sets up a VPN server. This is required to access tools that you don't want to expose to the world wide web.
 
 ### Prerequisites
 
@@ -371,6 +372,7 @@ You can now access the following containers using the specified address:
 * Nextcloud: http://10.0.0.13:80
 * Roundcube: http://10.0.0.15:80
 * Home Assistant: http://10.0.0.16:8123
+* Authentik: http://10.0.0.26:9000
 
 ## Nginx Proxy Manager
 
@@ -408,6 +410,28 @@ You can find out how to set up proxy hosts here: [DNS, Proxy, Cloudflare](#dns-p
 Nginx Proxy Manger automatically generates certificates based on your configuration.
 These certificates will be saved in the external volume `letsencrypt_data`.
 If you need these certificates in another container just mount this volume to `/etc/letsencrypt` inside the container.
+
+## Authentik
+
+We will now create an authentication server. This way you can access all your services using only one login. 
+
+Move to the `authentik` directory and start the containers:
+
+```shell
+docker compose up -d
+```
+
+Now go to http://10.0.0.26:9000/if/flow/initial-setup/ if you are connected to your VPN or set up a reverse proxy to https://authentik.example.com to set up Authentik.
+
+### Services
+
+The following guides show how to integrate Authentik on different services:
+
+* [Nextcloud](https://docs.goauthentik.io/integrations/services/nextcloud/)
+* [Home Assistant](https://docs.goauthentik.io/integrations/services/nextcloud/)
+* [Grafana](https://docs.goauthentik.io/integrations/services/nextcloud/)
+
+If you want to secure a service that does not have authentication built in, you can use Reverse Proxy authentication.
 
 ## Monitoring
 
@@ -466,6 +490,8 @@ Add the following dashboards and connect them to the prometheus data source:
 
 * [Node Exporter Full](https://grafana.com/grafana/dashboards/1860-node-exporter-full/)
 * [Docker-cAdvisor](https://grafana.com/grafana/dashboards/13946-docker-cadvisor/)
+
+You can now configure [authentication via Authentik](#authentik).
 
 ## Nextcloud
 
@@ -555,6 +581,10 @@ Add these lines to `/var/www/html/config/config.php`:
 ```
 
 Alternatively, you can set these values using occ: [occ config commands](https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/occ_command.html#config-commands)
+
+#### Post Install
+
+You can now configure [authentication via Authentik](#authentik).
 
 ## Mail
 
