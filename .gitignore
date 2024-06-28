@@ -1,5 +1,4 @@
 .idea
-homeassistant/certificates
 wg0.conf
 authentik/certs
 authentik/media
