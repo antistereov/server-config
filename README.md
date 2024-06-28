@@ -775,45 +775,6 @@ I created a script `dyndns.sh` in the homeassistant directory. This script looks
   ```
   Make sure to add the correct path of the script and a valid path for the log file.
 
-### Configuration
-
-Now you need to create new DNS records for homeassistant and a new proxy host in Nginx Proxy Mangager.
-It should resolve to: `http://10.0.0.16:8123`. Make sure to enable `Websockets support` and SSL encryption.
-Now you need homeassistant to trust the proxy. To do this you need to change the configuration of `homeassistant`.
-
-You can access the configuration by creating another container and mounting the volumes from `homeassistant`.
-
-```
-docker run --rm --volumes-from homeassistant -it ubuntu bash
--c "apt update && apt install -y nano && nano /config/configuration.yaml"
-```
-Now you should have root access to the newly created container. Inside the container do:
-
-```
-apt update && apt install -y nala
-nala /config/configuration.yml
-```
-
-Add the following lines:
-
-```
-http:
-  ip_ban_enabled: true
-  login_attempts_threshold: 5
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 10.0.0.5
-
-homeassistant:
-  auth_mfa_modules:
-    - type: totp
-```
-
-This configuration also enabled two factor authentication and enables IP ban to prevent brute-force attacks.
-Restart the container and you should now be able to access `homeassistant` via your newly created domain.
-
-To make the health check work properly, you also need to configure the domain you want to access `homeassistant` from in the `.env` file.
-
 ## Backup
 
 The backup script is located in `backup`. This script is specific to my system. You need to change the variable `backup-parent-dir`.
