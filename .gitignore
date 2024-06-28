@@ -4,3 +4,4 @@ wg0.conf
 authentik/certs
 authentik/media
 authentik/custom-templates
+authentik/.env
