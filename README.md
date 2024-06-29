@@ -174,7 +174,7 @@ Then you can run `installimage` to start the installation script.
     alias --save dc="docker compose"
     alias --save dl="docker logs"
     alias --save de="docker exec"
-    alias --save dps="docker ps --format '{{.Names}}\t{{.Status}}'"
+    alias --save dps="docker ps --format 'table {{.Names}}\t{{printf \"%-20s\" .Status}}'"
     ```
 12. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
