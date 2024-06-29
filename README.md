@@ -163,7 +163,7 @@ Then you can run `installimage` to start the installation script.
     alias --save bat=batcat
     ```
     
- 11. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+11. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
