@@ -221,6 +221,12 @@ sudo systemctl restart ssh
 
 You might also consider enabling key-based authentication to provide an extra layer of security. Here is a detailed guide on how to do just that: [How To Configure SSH Key-Based Authentication on a Linux Server](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server)
 
+To disable password-based authentication change this line in `/etc/ssh/ssd_config`:
+
+```text
+PasswordAuthentication no
+```
+
 ### Firewall Settings
 
 This configuration is based on the following sources:
