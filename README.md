@@ -126,7 +126,7 @@ Then you can run `installimage` to start the installation script.
    ```shel
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    # Add homebrew to path
-   fish_add_path /home/linuxbrew/.linuxbrew/bin
+   (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> ~/.bashrc
    ```
 6. Install fish using `homebrew` (my preferred shell)
    ```shell
@@ -145,7 +145,11 @@ Then you can run `installimage` to start the installation script.
    chsh -s $(which fish)
    ```
    Restart the terminal. `fish` should now be the default shell.
-8. Install useful tools:
+8. Add `homebrew` path to fish (if you installed `homebrew`). Make sure you're using fish.
+   ```shell
+   fish_add_path /home/linuxbrew/.linuxbrew/bin
+   ```
+10. Install useful tools:
     ```shell
     brew install zoxide fzf bat fd fisher
     ```
@@ -159,29 +163,29 @@ Then you can run `installimage` to start the installation script.
     alias --save bat=batcat
     ```
     
- 9. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+ 11. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
     ```
-10. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
+12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
     ```shell
     fisher install jethrokuan/z PatrickF1/fzf.fish IlanCosman/tide@v6
     ```
-11. Create useful aliases:
+13. Create useful aliases:
     ```shell
     alias --save dc="docker compose"
     alias --save dl="docker logs"
     alias --save de="docker exec"
     alias --save dps="docker ps --format 'table {{.Names}}\t{{printf \"%-20s\" .Status}}'"
     ```
-12. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
+14. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
     ssh-keygen -t ed25519 -C your@email.com
     ```
     and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
-13. Setting your Git username and mail for every repository on your computer:
+15. Setting your Git username and mail for every repository on your computer:
    ```shell
    git config --global user.name "Mona Lisa"
    git config --global user.email "YOUR_EMAIL"
