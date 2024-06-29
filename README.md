@@ -122,7 +122,7 @@ Then you can run `installimage` to start the installation script.
     ```shell
     sudo apt update && sudo apt upgrade -y
     ```
-5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/)
+5. Install `homebrew` (my preferred package manager, more information: [Homebrew](https://brew.sh/))
    ```shel
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    # Add homebrew to path
