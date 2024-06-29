@@ -221,10 +221,32 @@ sudo systemctl restart ssh
 
 You might also consider enabling key-based authentication to provide an extra layer of security. Here is a detailed guide on how to do just that: [How To Configure SSH Key-Based Authentication on a Linux Server](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server)
 
+When creating a server and adding an existing key it will be saved in `/root/.ssh/authorized_keys` by default. 
+If you want to sign in as another user, you have to copy this file to the user's home directoroy. As `root` run the following commands and make sure to change `<user>` to your actual username:
+
+```shell
+# Create directory for home user
+mkdir -p /home/<user>/.ssh
+# Copy the key file
+cp /root/.ssh/authorized_keys /home/<user>/.ssh/authorized keys
+# Change the ownership of this file
+chown -R <user>:<user> /home/<user>/.ssh
+```
+
+If you don't have any hosts set up, you can copy the public ssh key of the new host to this file.
+
+To secure your setup, you can configure ssh to only allow key-based authentication.
+This way only your specified hosts are allowed to log in to your server.
 To disable password-based authentication change this line in `/etc/ssh/ssd_config`:
 
 ```text
 PasswordAuthentication no
+```
+
+Restart the SSH service:
+
+```shell
+sudo systemctl restart ssh
 ```
 
 ### Firewall Settings
