@@ -149,43 +149,43 @@ Then you can run `installimage` to start the installation script.
    ```shell
    fish_add_path /home/linuxbrew/.linuxbrew/bin
    ```
-10. Install useful tools:
-    ```shell
-    brew install zoxide fzf bat fd fisher
-    ```
-    If you don't want to use `homebrew` or if you are on an ARM device, you need to install these tools using apt:
+9. Install useful tools:
+   ```shell
+   brew install zoxide fzf bat fd fisher
+   ```
+   If you don't want to use `homebrew` or if you are on an ARM device, you need to install these tools using apt:
 
-    ```shell
-    sudo apt install zoxide fzf bat fd-find
-    # Install fisher
-    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
-    # Add alias for bat
-    alias --save bat=batcat
-    ```
+   ```shell
+   sudo apt install zoxide fzf bat fd-find
+   # Install fisher
+   curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+   # Add alias for bat
+   alias --save bat=batcat
+   ```
     
-11. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
+10. For these tools to work, you need to append the following lines to `~/.config/fish/config.fish`:
     ```text
     # Enable zoxide
     zoxide init fish | source
     ```
-12. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
+11. Check out this repository to install fish plugins: [awsm.fish](https://github.com/jorgebucaran/awsm.fish)
     I like to use these:
     ```shell
     fisher install jethrokuan/z PatrickF1/fzf.fish IlanCosman/tide@v6
     ```
-13. Create useful aliases:
+12. Create useful aliases:
     ```shell
     alias --save dc="docker compose"
     alias --save dl="docker logs"
     alias --save de="docker exec"
     alias --save dps="docker ps --format 'table {{.Names}}\t{{printf \"%-20s\" .Status}}'"
     ```
-14. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
+13. If you want to use private Git repositories, you need to generate an SSH-key to be able to access the Server Config repository.
     ```shell
     ssh-keygen -t ed25519 -C your@email.com
     ```
     and add the newly generated SSH-key to your GitHub account: [GitHub Doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account).
-15. Setting your Git username and mail for every repository on your computer:
+14. Setting your Git username and mail for every repository on your computer:
    ```shell
    git config --global user.name "Mona Lisa"
    git config --global user.email "YOUR_EMAIL"
@@ -282,7 +282,29 @@ sudo ufw allow https
 
 **Note:** Docker doesn't obey these firewall settings and sets up its own settings in order to allow Docker to function as intended.
 
-### Mounting Storage Box
+### Mounting External Filesystems
+
+#### S3 Object Storage
+
+I use [Backblaze](https://www.backblaze.com/) as S3 object storage provider. 
+To be able to access your storage you need to generate an application key.
+
+1. Install [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse)
+    ```shell
+    sudo apt install s3fs
+    ```
+2. Enter your credentials in `/etc/passwd-s3fs`
+    ```shell
+    echo ACCESS_KEY_ID:SECRET_ACCESS_KEY > /etc/passwd-s3fs
+    chmod 600 /etc/passwd-s3fs
+    ```
+3. Create mount directory.
+4. Mount your bucket permanently by adding the following line to `/etc/fstab`:
+   ```text
+    mybucket /path/to/mountpoint fuse.s3fs _netdev,allow_other,use_path_request_style,url=https://url.to.s3/ 0 0
+    ```
+
+#### Hetzner Storage Box
 
 I use a [Storage Box](https://docs.hetzner.com/robot/storage-box/) provided by Hetzner to store backups of my Docker volumes and containers.
 Make sure that Samba/CIFS and external reachablitiy is enabled for your storage box.
@@ -808,6 +830,17 @@ I created a script `dyndns.sh` in the homeassistant directory. This script looks
   Make sure to add the correct path of the script and a valid path for the log file.
 
 ## Backup
+
+### Restic
+
+You can back up your files to an S3 object storage using restic.
+
+Follow [this](https://www.backblaze.com/docs/en/cloud-storage-integrate-restic-with-backblaze-b2) tutorial to integrate 
+restic with Backblaze.
+
+I recommend running restic as root to make sure that there will be no conflicts.
+
+### Docker volumes
 
 The backup script is located in `backup`. This script is specific to my system. You need to change the variable `backup-parent-dir`.
 
